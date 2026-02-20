@@ -35,6 +35,11 @@
 *.i*86
 *.x86_64
 *.hex
+bin/
+
+# Specific ececuatbles
+mocutsvd_example*
+mocutsvd_test*
 
 # Debug files
 *.dSYM/
@@ -53,3 +58,10 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+# Code::Blocks files
+*.cbp
+*.workspace
+*.layout
+*.depend
+
