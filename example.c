@@ -7,11 +7,11 @@
   *  Use test.c for a comprehensive evaluation of mocutsvd on large matrices.
   *
   *  Compilation:
-  *     gcc -o example example.c soputsvd.c -fopenmp -march=native -O3 -lm
+  *     gcc -o mocutsvd_example example.c mocutsvd.c -fopenmp -march=native -O3 -lm
   *     (-fopenmp is optional)
   *
   *  Usage:
-  *     example <rows> <cols>
+  *     mocutsvd_example <rows> <cols>
   *
   *  What it does:
   *    - Generates a (<rows> x <cols>) matrix M of random values.
@@ -29,7 +29,7 @@
 #include <stdarg.h>
 #include <memory.h>
 
-#include "soputsvd.h"
+#include "mocutsvd.h"
 
 /**********************************************************************************************************************/
 
@@ -42,37 +42,22 @@ uint64_t lcg_random( uint64_t v ) { return v * ( 505810533149048947ull * 4 + 1 )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-double* allocate_matrix( size_t rows, size_t cols )
+void mat_randomize( mocut_mat_s* m, uint64_t seed )
 {
-    double* mat = NULL;
-    size_t bytes = rows * cols * sizeof( double );
-    if( bytes == 0 ) return NULL;
-
-    // on large matrices try aligned_alloc( 0x40, bytes ) for a small performance boost on some platforms
-    if( !( mat = malloc( bytes ) ) )
-    {
-        fprintf( stderr, "Failed to allocate %zu bytes", bytes );
-        exit( 1 );
-    }
-    return mat;
+    uint64_t rval = seed;
+    for( size_t i = 0; i < m->rows; i++ )
+        for( size_t j = 0; j < m->cols; j++ )
+            mocut_mat_s_set( m, i, j, ( ( double )( rval = lcg_random( rval ) ) * ( 1.0 / ( 1ull << 63 ) ) ) - 1.0 );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void free_matrix( double* m )
+void mat_print( const mocut_mat_s* m )
 {
-    if( !m ) return;
-    free( m );
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void print_matrix( const double* mat, size_t rows, size_t cols )
-{
-    if( rows > 1 ) printf( "(%zu x %zu)\n", rows, cols );
-    for( size_t i = 0; i < rows; i++ )
+    if( m->rows > 1 ) printf( "(%zu x %zu)\n", m->rows, m->cols );
+    for( size_t i = 0; i < m->rows; i++ )
     {
-        for( size_t j = 0; j < cols; j++ ) printf( "% 6.3f ", mat[ i * cols + j ] );
+        for( size_t j = 0; j < m->cols; j++ ) printf( "% 6.3f ", mocut_mat_s_get( m, i, j ) );
         printf( "\n" );
     }
 }
@@ -89,55 +74,58 @@ int main( int argc, char* argv[] )
     size_t n = cols;
     size_t k = m < n ? m : n;
 
-    double* buf_a = allocate_matrix( m, n ); // space for matrix -> singular values
-    double* mat_u = allocate_matrix( k, m ); // space for left singular vectors
-    double* mat_v = allocate_matrix( k, n ); // space for right singular vectors
+    mocut_mat_s* mat_a = mocut_mat_s_create_alloc( m, n );
+    mocut_mat_s* mat_u = mocut_mat_s_create_alloc( k, m );
+    mocut_mat_s* mat_v = mocut_mat_s_create_alloc( k, n );
 
     // We fill matrix a with random values within range [-1.0, +1.0]
-    uint64_t rval = 1234;
-    for( size_t i = 0; i < n * m; i++ )
-    {
-        buf_a[ i ] = ( ( double )( rval = lcg_random( rval ) ) * ( 1.0 / ( 1ull << 63 ) ) ) - 1.0;
-    }
+    mat_randomize( mat_a, 1234 );
 
     printf( "Original Matrix\n" );
-    print_matrix( buf_a, rows, cols );
+    mat_print( mat_a );
 
     // SVD
-    if( soput_svd( rows, cols, buf_a, mat_u, mat_v ) != 0 ) printf( "SVD did not converge\n" );
-
-    printf( "\nSingular Values (Diagonal values of Σ)\n" );
-    print_matrix( buf_a, 1, k );
-
-    printf( "\nU*: Left singular vectors are row-vectors of U*\n" );
-    print_matrix( mat_u, k, m );
-
-    printf( "\nV*: Right singular vectors are row vectors of V*\n" );
-    print_matrix( mat_v, k, n );
-
-    // We now reconstruct the original matrix from singular values and vectors
-    double* mat_m = allocate_matrix( rows, cols );
-
-    // Reconstruction: M = U·Σ·V*
-    memset( mat_m, 0, rows * cols * sizeof( double ) ); // init matrix with 0
-    for( size_t l = 0; l < k; l++ )
+    int err = 0;
+    if( ( err = mocut_svd( mat_a, mat_u, mat_v ) ) )
     {
-        for( size_t i = 0; i < m; i++ )
+        if( err == MOCUT_WRN_CONVERGENCE )
         {
-            for( size_t j = 0; j < n; j++ )
-            {
-                mat_m[ i * cols + j ] += buf_a[ l ] * mat_u[ l * m + i ] * mat_v[ l * n + j ];
-            }
+            printf( "SVD did not converge\n" );
+        }
+        else
+        {
+            fprintf( stderr, "%s\n", mocut_err_text( err ) );
+            exit( 1 );
         }
     }
 
-    printf( "\nReconstructed Matrix. This should look like the original.\n" );
-    print_matrix( mat_m, rows, cols );
+    printf( "\nMatrix Σ with diagonal singular values\n" );
+    mat_print( mat_a );
 
-    free_matrix( buf_a );
-    free_matrix( mat_u );
-    free_matrix( mat_v );
-    free_matrix( mat_m );
+    printf( "\nU*: Left singular vectors are row-vectors of U*\n" );
+    mat_print( mat_u );
+
+    printf( "\nV*: Right singular vectors are row vectors of V*\n" );
+    mat_print( mat_v );
+
+    // We now reconstruct the original matrix from singular values and vectors
+    mocut_mat_s* mat_m = mocut_mat_s_create_alloc( m, n );
+
+    for( size_t l = 0; l < k; l++ )
+        for( size_t i = 0; i < m; i++ )
+            for( size_t j = 0; j < n; j++ )
+                mat_m->data[ i * mat_m->stride + j ] +=
+                    mat_a->data[ l * ( mat_a->stride + 1 ) ] *
+                    mat_u->data[ l * mat_u->stride + i ] *
+                    mat_v->data[ l * mat_v->stride + j ];
+
+    printf( "\nReconstructed Matrix. This should look like the original.\n" );
+    mat_print( mat_m );
+
+    mocut_mat_s_discard( mat_a );
+    mocut_mat_s_discard( mat_u );
+    mocut_mat_s_discard( mat_v );
+    mocut_mat_s_discard( mat_m );
 
     return 0;
 }
