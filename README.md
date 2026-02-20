@@ -1,9 +1,8 @@
 # MOCUT SVD - Singular Value Decomposition
 # What it is
 
-MOCUT SVD is an efficient and easy-to-use stand-alone-implementation of the thin Singular Value Decomposition for C or C++ programs.
-
-It implements a specific SVD solution designed to run efficiently and mostly in parallel on modern CPUs. It makes minimal assumptions about the underlying hardware and runtime environment, thus providing a highly portable solution.
+MOCUT SVD is an efficient, easy-to-use and highly portable stand-alone-implementation of the Singular Value Decomposition for C or C++ programs.
+This SVD solution was completely redesigned from scratch. It contains improvements compared to traditional implementations and is specially optimized for modern CPUs.
 
 # How to use it
 
