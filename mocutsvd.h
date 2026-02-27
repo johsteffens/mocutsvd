@@ -281,6 +281,17 @@ static inline mocut_mat_s* mocut_mat_s_create_alloc( size_t rows, size_t cols )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// returns NULL in case allocation fails
+static inline mocut_mat_s* mocut_mat_s_create_setup( size_t rows, size_t cols, size_t stride, double* data )
+{
+    mocut_mat_s* o = mocut_mat_s_create();
+    if( !o ) return NULL;
+    if( mocut_mat_s_setup( o, rows, cols, stride, data ) ) return NULL;
+    return o;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 static inline void mocut_mat_s_down( mocut_mat_s* o )
 {
     mocut_mat_s_clear( o );
@@ -294,6 +305,10 @@ static inline void mocut_mat_s_discard( mocut_mat_s* o )
     mocut_mat_s_down( o );
     MOCUT_MEM_FREE( o );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static inline double* mocut_mat_s_ptr( const mocut_mat_s* o, size_t row, size_t col ) { return o->data + row * o->stride + col; }
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -324,6 +339,20 @@ static inline int mocut_mat_s_copy( mocut_mat_s* o, const mocut_mat_s* m )
     for( size_t i = 0; i < o->rows; i++ )
         for( size_t j = 0; j < o->cols; j++ )
             o->data[ i * o->stride + j ] = m->data[ i * m->stride + j ];
+
+    return 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// copies transposed data of matrix m to matrix o; o must have the transposed size of m
+static inline int mocut_mat_s_copy_transposed( mocut_mat_s* o, const mocut_mat_s* m )
+{
+    if( o->cols != m->rows ) return MOCUT_ERR_ROWS_MISMATCH;
+    if( o->rows != m->cols ) return MOCUT_ERR_COLS_MISMATCH;
+    for( size_t i = 0; i < o->rows; i++ )
+        for( size_t j = 0; j < o->cols; j++ )
+            o->data[ i * o->stride + j ] = m->data[ j * m->stride + i ];
 
     return 0;
 }
@@ -445,7 +474,7 @@ enum
  *   MOCUT_ERR_V_COLS     : V is pre-allocated but has the wrong number of columns
  *
  */
-static inline int mocut_decompose( mocut_mat_s* a, mocut_mat_s* u, mocut_mat_s* v, int decomposition_type )
+static inline int mocut_decompose( mocut_mat_s* restrict a, mocut_mat_s* restrict u, mocut_mat_s* restrict v, int decomposition_type )
 {
     if( mocut_mat_s_contains_nan( a ) ) return MOCUT_ERR_MAT_CONTAINS_NAN;
 
@@ -504,9 +533,9 @@ static inline int mocut_decompose( mocut_mat_s* a, mocut_mat_s* u, mocut_mat_s* 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static inline int mocut_svd( mocut_mat_s* a, mocut_mat_s* u, mocut_mat_s* v ) { return mocut_decompose( a, u, v, MOCUT_SVD ); }
-static inline int mocut_bid( mocut_mat_s* a, mocut_mat_s* u, mocut_mat_s* v ) { return mocut_decompose( a, u, v, MOCUT_BID ); }
-static inline int mocut_bnd( mocut_mat_s* a, mocut_mat_s* u, mocut_mat_s* v ) { return mocut_decompose( a, u, v, MOCUT_BND ); }
+static inline int mocut_svd( mocut_mat_s* restrict a, mocut_mat_s* restrict u, mocut_mat_s* restrict v ) { return mocut_decompose( a, u, v, MOCUT_SVD ); }
+static inline int mocut_bid( mocut_mat_s* restrict a, mocut_mat_s* restrict u, mocut_mat_s* restrict v ) { return mocut_decompose( a, u, v, MOCUT_BID ); }
+static inline int mocut_bnd( mocut_mat_s* restrict a, mocut_mat_s* restrict u, mocut_mat_s* restrict v ) { return mocut_decompose( a, u, v, MOCUT_BND ); }
 
 //----------------------------------------------------------------------------------------------------------------------
 

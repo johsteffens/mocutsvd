@@ -1,7 +1,7 @@
 /// Author and Copyright 2026 Johannes Bernhard Steffens
 
  /** This simple example program demonstrates the usage of mocutsvd.
-  *  You may feely use code snippets from this file for your own integration of mocutsvd.
+  *  You may freely use code snippets from this file for your own integration of mocutsvd.
   *
   *  This example code is not designed for very large matrices.
   *  Use test.c for a comprehensive evaluation of mocutsvd on large matrices.
@@ -109,15 +109,15 @@ int main( int argc, char* argv[] )
     mat_print( mat_v );
 
     // We now reconstruct the original matrix from singular values and vectors
-    mocut_mat_s* mat_m = mocut_mat_s_create_alloc( m, n );
+    mocut_mat_s* mat_m = mocut_mat_s_create_alloc( m, n ); // this function also zeroes all elements
 
     for( size_t l = 0; l < k; l++ )
         for( size_t i = 0; i < m; i++ )
             for( size_t j = 0; j < n; j++ )
-                mat_m->data[ i * mat_m->stride + j ] +=
-                    mat_a->data[ l * ( mat_a->stride + 1 ) ] *
-                    mat_u->data[ l * mat_u->stride + i ] *
-                    mat_v->data[ l * mat_v->stride + j ];
+                *mocut_mat_s_ptr( mat_m, i, j ) +=
+                    *mocut_mat_s_ptr( mat_u, l, i ) *
+                    *mocut_mat_s_ptr( mat_a, l, l ) *
+                    *mocut_mat_s_ptr( mat_v, l, j );
 
     printf( "\nReconstructed Matrix. This should look like the original.\n" );
     mat_print( mat_m );
