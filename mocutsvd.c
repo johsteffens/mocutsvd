@@ -13,9 +13,47 @@
  *  limitations under the License.
  */
 
- /** Stand-alone SVD implementation based on a parallel and data-local approach
-  *  called Monoclinic Unitary Transformation (MOCUT)
-  */
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/** MOCUT-SVD: Fast, stable and true-scalable Singular Value Decomposition (SVD).
+ *
+ *  Most relevant for the overall performance is the partitioning of unitary transformations, which I call
+ *  Monoclinic Unitary Transformation (MOCUT).The name is inspired from crystallography, where the term monoclinic
+ *  describes a special form of oblique crystal cell tiling. It resembles the transformation pattern used in this
+ *  algorithm. It is useful in multiple paradigms for computational efficiency.
+ *
+ *  MOCUT-SVD ensures data-locality (for cache-efficiency) and outer independence (for parallelity)
+ *  It uses OpenMP pragmas for parallel processing. Where OpenMP is not available or not wanted
+ *  the function simply runs sequentially on the caller thread. (see https://en.wikipedia.org/wiki/OpenMP)
+ *
+ *  High Portability:
+ *  This stand-alone implementation makes minimal assumptions about actual hardware, compiler and libraries.
+ *  It expects the compiler to support the C11 standard. Support for OpenMP is only needed for thread-parallelity
+ *  but not required.
+ *
+ *  Matrix ABI:
+ *  A matrix representation follows strided row-major ordering:
+ *  Rows are stored sequentially in contiguous memory. Row-ends are padded with unused data points to ensure constant stride
+ *  between adjacent rows.
+ *
+ *  Recommended alignment: Matrix rows should be memory-aligned for optimal performance.
+ *  Use aligned_alloc for memory allocation with alignment = 128 (0x80) (=16*sizeof(double)).
+ *  Use stride value: stride = cols + ( ( cols % 16 ) > 0 ) ? 16 - ( cols % 16 ) : 0.
+ *
+ *  Recommended compiler flags (gcc)
+ *    -O3             Speed optimization
+ *    -march=native   Allows the compiler to use CPU-native components (e.g. SIMD)
+ *    -fopenmp        Activates OpenMP (must also be presented to the linker)
+ *
+ */
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
 
 #include "mocutsvd.h"
 

@@ -8,7 +8,9 @@ MOCUT SVD is an efficient, easy-to-use and highly portable stand-alone-implement
 
 ## Essentials in a Nutshell
 
-You only need the two files `mocutsvd.h` and `mocutsvd.c`. Include `mocutsvd.h` in your program (C or C++ code) and compile `mocutsvd.c` among your sources.
+You only need the two files `mocutsvd.h` and `mocutsvd.c`. 
+
+Include `mocutsvd.h` in your program (C or C++ code) and compile `mocutsvd.c` among your sources.
 
 #### Example Code
 
@@ -60,34 +62,33 @@ mocut_mat_s_discard( v );
   * Recommended for advanced CPU specific optimization: `-march=native`. 
   * Optional to unlock outer parallelity: `-fopenmp` (both: compiler and linker need this flag)
 
-**Example**
+* **Example**: ```bash $ gcc -o mocutsvd_example example.c mocutsvd.c -fopenmp -march=native -O3 -lm```
 
-``` $ gcc -o example example.c mocutsvd.c -fopenmp -march=native -O3 -lm```
-
+* There is also a simple [makefile](makefile), which you might want to inspect.
 
 ### Example Application
 
-`example.c` contains a short and easy to learn example application. It outputs the decomposition to stdout:
+[`example.c`](example.c) contains a short and easy to learn example application. It outputs the decomposition to stdout:
 
-```
-$ make example
+```bash
+$ make mocutsvd_example
 
 $ # run on 5 x 10 matrix
-$ ./example 5 10
+$ ./mocutsvd_example 5 10
 ```
 
 ### Evaluation Application
 
-`test.c` can be used for performance testing on larger matrices. It creates a random matrix, decomposes it with time measurement, reconstructs the original form the decomposed factors and computes the RMS-error of the reconstruction:
+[`test.c`](test.c) can be used for performance testing on larger matrices. It creates a random matrix, decomposes it with time measurement, reconstructs the original form the decomposed factors and computes the RMS-error of the reconstruction:
 
-```
-$ make test
+```bash
+$ make mocutsvd_test
 
 $ # run without arguments to get all options:
-$ ./test 
+$ ./mocutsvd_test 
 
 $ # run a test on a 10000 x 10000 matrix:
-$ ./test 10000 10000 
+$ ./mocutsvd_test 10000 10000 
 ```
 
 ### Benefits
@@ -107,8 +108,7 @@ ___________________________________
 
 MOCUT SVD is an algorithm for singular value decomposition, completely redesigned from scratch.  Given a matrix $ M $, it calculates the matrices $ U^*, \Sigma, V^* $ such that  $M = U \cdot \Sigma \cdot V^*$ .  It bases on the Golub-Kahan-Reinsch approach and inherits its proven stability. However, it deviates from traditional methods in many performance-critical aspects.
 
-**Note** 
-MOCUT SVD generates the matrices of singular vectors in their transposed form: $ U^* $, $ V^* $, where singular vectors are row-vectors. If desired, you can convert the matrix back to the traditional form via function ```mocut_mat_s_copy_transposed```.
+**MOCUT** is a shortcut for a special kind of recurring unitary transformation pattern I designed for this SVD solution. More details can be found in the whitepaper: [MOCUT SVD: Singular Value Decomposition via Monoclinic Unitary Transformations](doc/mocutsvd.md).
 
 **Platform Support**
 
@@ -117,6 +117,9 @@ MOCUT SVD is adapted to optimally utilize typical components in modern CPU archi
 At the same time the code maintains high portability: It only requires compliance to the C11 (or later) standard. Hence the code should be usable without adaptation with far most of todays compiler-tool-chains, operating systems and platforms.
 
 This level of portability is achieved by utilizing coding paradigms that allow the compiler to apply platform specific optimizations. Outer parallelity is achieved via [Open MP](https://en.wikipedia.org/wiki/OpenMP).
+
+**Note:** 
+MOCUT SVD generates the matrices of singular vectors in their transposed form: $ U^* $, $ V^* $, where singular vectors are row-vectors. If desired, you can convert the matrix back to the traditional form via function ```mocut_mat_s_copy_transposed```.
 
 ### Error Handling
 
@@ -160,8 +163,15 @@ The matrix `matrix-alloc` function chooses the `stride` value equal to or slight
   
   * Destructs a matrix. Frees all memory this matrix owns. For construction, see ```mocut_mat_s_create```.
   
-    
+*  **```void mocut_mat_s_init( mocut_mat_s*  );```**
+  * Initializes an empty matrix instance that was created on the stack.
+  * To tear it down, call `mocut_mat_s_down`.
+  * Do not use this function when you create on dynamic memory it via `mocut_mat_s_create`.
   
+* **```void mocut_mat_s_down( mocut_mat_s* );```**
+  * Tears down a matrix that was initialized by `mocut_mat_s_init`. 
+  * Do not use this function when you created it on dynamic memory it via `mocut_mat_s_create`.
+
 * **```int mocut_mat_s_alloc( mocut_mat_s* o, size_t rows, size_t cols );```**
 
   * Allocates a (rows x cols )-matrix and initializes all values to zero.
@@ -262,8 +272,12 @@ The matrix `matrix-alloc` function chooses the `stride` value equal to or slight
   
   * Copies the transposed matrix data from `m` to `o`. 
   
-  * Both matrices must be allocated to the transposed size: `(o.rows==m.cols) && (o.cols==m.rows)`
-    **Return:** 
+  * Both matrices must be allocated to the respective transposed size: `(o.rows==m.cols) && (o.cols==m.rows)`
+    
+  * In case of a square matrix `(rows == cols)`, `o` and `m` may reference the same matrix: In-place transposition.
+    
+  * **Return:** 
+    
     * `0`: Success
     
     * `>0`: Error Code.
@@ -302,6 +316,64 @@ MOCUT-functions are thread-safe, provided the data passed as argument is not sha
 Although `mocut_svd` may spawn its own threads, those are completely shielded from any multi-threaded environment you might be using in your application.
 
 
+## Memory and Data Alignment
+MOCUT SVD offers some customization around memory handling.
+
+Function `mocut_svd` does not allocate or free any memory; instead it uses the memory space provided by the matrices. The matrix uses a memory management back-end only for allocation and destruction. Per default it uses `stdlib` functions `aligned_alloc` and `free`. Alternatively, you can declare your custom memory functions or supply external memory to a matrix via function `mocut_mat_s_setup`. You can also control memory alignment.
+
+This opens possibilities for platforms with limited or non-standard memory management:
+
+### Custom Memory Management
+
+If you wish to use a specific memory manager, define macros `MOCUT_MEM_ALLOC( size )` and `MOCUT_MEM_FREE( data )` before including `mocutsvd.h`. 
+
+MOCUT_MEM_ALLOC( size ) should represent a dynamic allocation  function similar to stdlib's `malloc`.
+
+MOCUT_MEM_FREE( data ) should represent a memory release function similar to stdlib's `free`.
+
+In the example below, the memory manager [TBMAN](https://github.com/johsteffens/tbman) would be used:
+
+``` C
+#define MOCUT_MEM_ALLOC( size ) tbman_malloc( size )
+#define MOCUT_MEM_FREE( data ) tbman_free( data )
+#include "mocutsvd.h"
+```
+
+### No Memory Management
+
+If you wish to prevent MOCUT SVD from using any memory management, define `MOCUT_NO_MEM_ALLOC` before including `mocutsvd.h`.
+
+``` C
+#define MOCUT_NO_MEM_ALLOC
+#include "mocutsvd.h"
+```
+
+Do not use functions `mocut_mat_s_create`, `mocut_mat_s_discard`, `mocut_mat_s_alloc`.
+
+Instead, place the matrix instance on the stack and use functions `mocut_mat_s_init`, `mocut_mat_down`, `mocut_mat_setup`.
+
+``` C
+mocut_mat_s a; // instance a placed on the stack
+mocut_mat_s_init( &a ); // instance a is initialized
+mocut_mat_s_setup( &a, rows, cols, stride, data ); // assigning an external matrix data area
+
+... // working with a
+
+mocut_mat_s_down( &a ); // instance a is cleaned up
+```
+
+**Note:** Without memory management, you might need to take care of proper alignment of the assigned memory area.
+
+### Custom Data Alignment
+
+MOCUTSVD aligns matrix data to improve on inner parallelity and cache usage for most processors. If you wish to experiment with your own custom alignment, define MOCUT_MEM_ALIGN with a constant indicating the alignment in bytes before including `mucutsvd.h`:
+
+``` C
+#define MOCUT_MEM_ALIGN 32 // aligns matrix rows to multiple of 32 bytes
+```
+
+**Note:** Alignment should be a multiple of `sizeof( double )` == `8 bytes`.
+
 ## Side Effects and Remedies
 
 ### Threads, Open MP
@@ -318,26 +390,22 @@ By default MOCUT SVD spawns multiple threads according to the number of logical 
 * If you wish more specific control, look up the Open MP documentation: [https://www.openmp.org](https://www.openmp.org)
 
 ### High CPU Load
-On very large matrices, the function `mocut_svd` will put significant and prolonged load on the CPU, possibly running it near its rated limits. 
+On very large matrices, the function `mocut_svd` will put significant prolonged load on the CPU, possibly running it near its rated limits. 
 
-Normally, machines are designed to handle this type of load. CPUs can throttle their clock rate to avoid overheating.
+Normally, machines are designed to handle this type of load for an indefinite time.
 
-However, if the platform was setup to override safety measures (e.g. via overclocking) or has inadequate cooling, the safe limits can be exceeded which might cause malfunction and in extreme cases even damage to the CPU or other hardware components.
+However, if the platform was setup to override safety measures (e.g. via overclocking) or has inadequate cooling, safety limits can be exceeded which might cause malfunction and in extreme cases even damage to the CPU or other hardware components.
 
-Make sure your CPU is adequately cooled and all safety measures are active.
+Make sure the CPU is adequately cooled and all safety measures are active.
 
 ### Valgrind
 Advanced debugging tools like `valgrind` analyze the instructions and memory usage of a program:
 
 * Valgrind might not recognize newer native CPU instructions, which occur with certain native compiler optimizations (such as `-march=native` ).
 
-* Valgrind might also not be compatible to a compilers integration of OpenMP  (`-fopenmp`).
+* Valgrind might not be compatible to a compilers integration of OpenMP  (`-fopenmp`).
 
-To analyze code with `valgrind`, avoid above compiler flags.
+To analyze code with `valgrind`, disable above compiler flags.
 
-### Memory Manager and Alignment
-
-
-
-## Performance Test
+## Performance
 

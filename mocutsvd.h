@@ -77,6 +77,7 @@ enum
     MOCUT_ERR_ROWS_MISMATCH,
     MOCUT_ERR_COLS_MISMATCH,
     MOCUT_ERR_MAT_CONTAINS_NAN,
+    MOCUT_ERR_SAME_MATRIX,
 };
 
 static inline const char* mocut_err_text( int err_code )
@@ -84,7 +85,7 @@ static inline const char* mocut_err_text( int err_code )
     switch( err_code )
     {
         case MOCUT_NO_ERR:               return "No error.";
-        case MOCUT_WRN_CONVERGENCE:      return "No Convergence.";
+        case MOCUT_WRN_CONVERGENCE:      return "No convergence.";
         case MOCUT_ERR_STRIDE:           return "Incorrect stride value (e.g. stride < cols).";
         case MOCUT_ERR_ALLOC:            return "Memory allocation failed.";
         case MOCUT_ERR_ROW_OUT_OF_RANGE: return "Row-index out of range.";
@@ -98,6 +99,8 @@ static inline const char* mocut_err_text( int err_code )
         case MOCUT_ERR_ROWS_MISMATCH:    return "Matrix has the wrong number of rows.";
         case MOCUT_ERR_COLS_MISMATCH:    return "Matrix has the wrong number of columns.";
         case MOCUT_ERR_MAT_CONTAINS_NAN: return "Matrix contains one or more NAN values.";
+
+        case MOCUT_ERR_SAME_MATRIX:      return "Two or more arguments reference the same matrix. Different matrices were expected.";
 
         default: break;
     }
@@ -334,6 +337,7 @@ static inline int mocut_mat_s_set( const mocut_mat_s* o, size_t row, size_t col,
 /// copies data of matrix m to matrix o; o must be properly allocated
 static inline int mocut_mat_s_copy( mocut_mat_s* o, const mocut_mat_s* m )
 {
+    if( o == m ) return 0;
     if( o->rows != m->rows ) return MOCUT_ERR_ROWS_MISMATCH;
     if( o->cols != m->cols ) return MOCUT_ERR_COLS_MISMATCH;
     for( size_t i = 0; i < o->rows; i++ )
@@ -348,11 +352,38 @@ static inline int mocut_mat_s_copy( mocut_mat_s* o, const mocut_mat_s* m )
 /// copies transposed data of matrix m to matrix o; o must have the transposed size of m
 static inline int mocut_mat_s_copy_transposed( mocut_mat_s* o, const mocut_mat_s* m )
 {
-    if( o->cols != m->rows ) return MOCUT_ERR_ROWS_MISMATCH;
-    if( o->rows != m->cols ) return MOCUT_ERR_COLS_MISMATCH;
-    for( size_t i = 0; i < o->rows; i++ )
-        for( size_t j = 0; j < o->cols; j++ )
-            o->data[ i * o->stride + j ] = m->data[ j * m->stride + i ];
+    // in place transposition allowed for square matrix
+    if( o == m )
+    {
+        if( !o ) return 0;
+        if( o->rows == o->cols )
+        {
+            for( size_t i = 0; i < o->rows; i++ )
+            {
+                for( size_t j = 0; j < i; j++ )
+                {
+                    double t = o->data[ i * o->stride + j ];
+                    o->data[ i * o->stride + j ] = o->data[ j * o->stride + i ];
+                    o->data[ j * o->stride + i ] = t;
+                }
+
+            }
+        }
+        else
+        {
+            return MOCUT_ERR_SAME_MATRIX;
+        }
+    }
+    else
+    {
+        if( o->cols != m->rows ) return MOCUT_ERR_ROWS_MISMATCH;
+        if( o->rows != m->cols ) return MOCUT_ERR_COLS_MISMATCH;
+
+        for( size_t i = 0; i < o->rows; i++ )
+            for( size_t j = 0; j < o->cols; j++ )
+                o->data[ i * o->stride + j ] = m->data[ j * m->stride + i ];
+    }
+
 
     return 0;
 }
@@ -476,6 +507,9 @@ enum
  */
 static inline int mocut_decompose( mocut_mat_s* restrict a, mocut_mat_s* restrict u, mocut_mat_s* restrict v, int decomposition_type )
 {
+    if( a == u ) return MOCUT_ERR_SAME_MATRIX;
+    if( a == v ) return MOCUT_ERR_SAME_MATRIX;
+
     if( mocut_mat_s_contains_nan( a ) ) return MOCUT_ERR_MAT_CONTAINS_NAN;
 
     size_t n = ( a->rows < a->cols ) ? a->rows : a->cols;
@@ -490,6 +524,8 @@ static inline int mocut_decompose( mocut_mat_s* restrict a, mocut_mat_s* restric
 
     if( u )
     {
+        if( u == v ) return MOCUT_ERR_SAME_MATRIX;
+
         if( u->data )
         {
             if( u->rows != n       ) return MOCUT_ERR_U_ROWS;
