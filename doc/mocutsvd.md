@@ -3,9 +3,9 @@
 
 #### Technical Whitepaper by Johannes B. Steffens
 
-#### February 2026
+#### March 2026
 
-## 1 Introduction
+## Introduction
 
 [Singular Value Decomposition](https://en.wikipedia.org/wiki/Singular_value_decomposition) (SVD) is a fundamentally important discipline in linear algebra. Fast algorithms that perform the SVD reliably on any matrix are most sought after in sciences and engineering.
 
@@ -21,23 +21,28 @@ This paper describes a general purpose and highly portable SVD algorithm, which 
 
 The name MOCUT is an acronym for the specific pattern, ordering and partitioning of unitary transformations described in this paper. It gives a performance edge over earlier SVD algorithms.
 
-## 2 True Scalability
+<a id="true_scalable"></a>
+
+## True Scalability: Paradigms
 
 Numerical complexity is the amount of elementary numerical operations needed. These are operations like multiplications and additions.
 
-In the early days of computing, the hardware was simple enough to permit assessment of computation time from the numerical complexity of an algorithm. Therefore numerical complexity became the most relevant descriptive property of an algorithm. It inspired the [big O notation](https://en.wikipedia.org/wiki/Big_O_notation) , which represents the asymptotic numerical complexity for one or more parameters. This notation is still used as indicator for the scalability of an algorithmic solution to a numeric problem.
+In earlier days of computing, assessment of computation time from mere numerical complexity of an algorithm was sufficient. Eventually numerical complexity became the most relevant descriptive property of an algorithm. It inspired the [big O notation](https://en.wikipedia.org/wiki/Big_O_notation) , which represents the asymptotic numerical complexity for one or more parameters. This notation is still used as indicator for the scalability of an algorithmic solution to a numeric problem.
 
-Computing hardware keeps improving over time. Although all programs likely run faster on newer hardware, many no longer scale according to that simple metric given by numerical complexity. Newer hardware specific paradigms need proper consideration as well. On the other hand, developers strive to write platform-independent code to maximize portability. 
+Computing hardware keeps improving over time. While algorithms likely run faster on newer hardware, that simple metric is no longer a sufficient assessment for an algorithm's scalability.
 
 Intuitively, we relate the execution-time of an algorithm solving a numeric problem to $ \text{ numerical complexity } \over \text{ computational power } $. "*Computational power*" would be a function of : Number of CPU (-cores), CPU clock frequency, cache size & speed, RAM speed, etc. 
 
 Therefore, I'd like to coin the term ***True-Scalable***:  An algorithm shall be **true-scalable** when it is hardware-agnostic and its computation time is a linear function of  $ \text{ numerical complexity } \over \text{ computational power } $.
 
-This section discusses the most important efficiency paradigms to achieve true scalability. These are: **Data-Layout**, **Parallelity**, **Data-Locality** and **Data-Alignment**.
+In this section I'd like to summarize the most important generic coding paradigms to achieve true scalability. These are: **Data-Layout**, **Parallelity**, **Data-Locality** and **Data-Alignment**.
 
-To illustrate this, we use the multiplication of two n x n matrices as example. Let $ a, b, c $ be (n x n) matrices. $ c $ shall be initialized with zeros. We compute the matrix-matrix product $ c = ab $.
+For easy illustration, I use the simple multiplication of two n x n matrices as example and show how each paradigm can be considered to achieve a true scalable algorithm. 
 
-**Example 1**: Standard formula
+Let $ a, b, c $ be (n x n) matrices. $ c $ shall be initialized with zeros. We compute the matrix-matrix product $ c = ab $.
+
+<a id="example_1"></a>
+**Example 1:** Standard formula
 
 ``` C
 for( int i = 0; i < n; i++ )
@@ -46,11 +51,23 @@ for( int i = 0; i < n; i++ )
             c[i][j] += a[i][k] * b[k][j];
 ```
 
-#### 2.0 Data Layout
+Although matrix-matrix multiplication has a numeric complexity of $O(n^3)$,  The time scalability of this textbook implementation is $O(n^x)$ with $x$ significantly larger than $3$. The main reason is that the innermost loops access large sections and distant elements of memory. With small $ n $, the entire matrix fits in low level cache and the algorithm runs fast, as $ n $ rises, cache misses increase throughout all cache levels.
 
+### Data Layout
 
+We assume that the matrix is located in contiguous memory.  For $c_{ij}$ we used the generic notation`c[i][j]`, which in a strict sense is only correct C-code when the matrix has a fixed size and is located on the stack. The dynamic solution places the matrix data on the heap as contiguous one dimensional array. 
 
-#### 2.1 Inner Parallelity
+The [row-major](https://en.wikipedia.org/wiki/Row-_and_column-major_order) ordering, elements in a row have the same order in memory. All rows are stored as [strided array](https://en.wikipedia.org/wiki/Stride_of_an_array) with a fixed distance, called `stride`. It is  `stride >= columns`. In this ordering is $c_{ij}$ = `c[ i * stride + j ]`. For tightly packed matrices, `stride` would be equal to `columns`. We will show in section [Data Alignment](#data-alignment) that `stride` should be a multiple of a fixed block size.
+
+The [column-major](https://en.wikipedia.org/wiki/Row-_and_column-major_order) ordering is the transposed counterpart with $c_{ij}$ = `c[ j * stride + i ]`.
+
+There are other ordering methods but these two are most commonly used.
+
+Modern [DRAM](https://en.wikipedia.org/wiki/Dynamic_random-access_memory) is accessed in [bursts](https://en.wikipedia.org/wiki/Burst_mode_(computing)) where multiple adjacent values are loaded at once into the cache. This happens even if a program needs only one or a few of them. It is therefore a good strategy to design the code such that the the data within a burst is mostly used such that the number of individual bursts is kept minimal. [Example 1](#example_1) should run faster with a row-major-order, because for two out of three matrices, rows are accesses sequentially in inner loops.
+
+Going forward, we will assume that all matrices have row-major order.
+
+### Inner Parallelity
 
 The inner parallelity of a program addresses the synchronous parallel components of a processor. These are typically SIMD units. They use the same (or related) numerical operations but on different data. Key aspects is that each operation is fast (often just one CPU clock cycle). All parallel operations for a given instruction finish at the same time and all involved data is updated at the same time. These is no synchronization needed. 
 
@@ -62,6 +79,7 @@ Code with inner parallelity is designed such that the most time consuming sectio
 
 Example 1 has no inner parallelity because the innermost loop is not permutable.
 
+<a id="example_2"></a>
 **Example 2: With inner parallelity**
 
 ``` C
@@ -72,9 +90,11 @@ for( int i = 0; i < n; i++ )
 			// The innermost loop is permutable: 
 			// The compiler can optimize it (vectorization)
 ```
-In example 2 the two inner loops are swapped, which makes the inner loop permutable. Many compilers can detect the inner parallelity and apply fast SIMD multiply-accumulate operations. Example 2 should therefor execute faster than example 1 when compiled with optimizations enabled (gcc: ```-O3 -march=native```).
+In [example 2](#example_2) the two inner loops are swapped, which makes the inner loop permutable. Many compilers can detect the inner parallelity and apply fast SIMD multiply-accumulate operations. Example 2 should therefor execute faster than example 1 when compiled with optimizations enabled (gcc: ```-O3 -march=native```).
 
-#### 2.2 Outer Parallelity
+The inner loop in example 2 has also better [data-locality](#data-locality) than example 1. It should therefore be faster even without any vectorization.
+
+### Outer Parallelity
 
 Parallelity can also be achieved by dividing a program into sections that can be executed in dedicated (independent) threads simultaneously. These threads typically run on different CPU cores, thus achieving a speed advantage over executing the program sections sequentially. If there are mutually independent code-sections, each can run in a dedicated thread. In this respect threads provide much flexibility. The drawback is that threads run asynchronously: Processing of thread-results can only proceed when all these threads have finished, hence threads need monitoring. This requires extra overhead and slows down overall processing. Multi-threaded programs run efficiently when the number of synchronization cycles is kept at a minimum. 
 
@@ -82,6 +102,7 @@ Therefore threaded sections are preferably long-running. The subdivision of a pr
 
 A platform agnostic solution is the [Open MP](https://www.openmp.org/) standard. It tells the compiler via [pragma-directive](https://en.wikipedia.org/wiki/Directive_(programming)) that all cycles of the outermost loop are independent and therefore can run in any order. A compiler supporting the Open MP standard will then attempt to distribute all cycles across multiple threads.
 
+<a id="example_3"></a>
 **Example 3: With inner and outer parallelity**
 
 ``` C
@@ -93,9 +114,11 @@ for( int i = 0; i < n; i++ )
             c[i][j] += a[i][k] * b[k][j];
 ```
 
-The outermost loop from example 2 is already independent because the data being modified in each cycle is not shared across cycles. Read-only data can be shared across cycles. Nevertheless the developer must carefully check this before allowing outer parallelity.
+In this case the outermost loop in [example 3](#example_3) needs no adaptation. It is already independent because each cycle modifies a different block of data without overlaps. So, we can add a directive to the compiler to spread these cycles across multiple threads.
 
-### 2.3 Data Locality
+The developer must nevertheless carefully design and check his/her code for this property. The compiler will not be able to do it automaticallly, neither will the compiler be able to reliably detect harmful interdependencies.
+
+### Data Locality
 
 Modern CPUs can operate many thousand times faster than their early predecessors. However, memory latency has improved at a slower rate and there are physical limitations with respect to future developments. Information can travel at most at light speed but mass storage occupies space and needs to be accessible by all cores. It therefore cannot be placed in the immediate vicinity of a CPU core. This limitation will stay with us even when considering the ongoing progress in hardware packaging and miniaturization.
 
@@ -107,13 +130,14 @@ Example 3 is not data-local because for each of the $ n $ outer cycles, the enti
 
 The principal goal for achieving data-locality is to limit the computational effort to a small data-area as far as possible. In case of matrix-multiplication this is typically done via [block-partitioning](https://en.wikipedia.org/wiki/Block_matrix) and [divide and conquer](https://en.wikipedia.org/wiki/Matrix_multiplication_algorithm#Divide-and-conquer_algorithm). 
 
+<a id="example_4"></a>
 **Example 4: With inner and outer parallelity and data-locality**
 
 ``` C
 int min( int x, int y ) { return x < y ? x : y; }
 
 // nb = block size; choose nb such that 3*nb*nb values fit well into the L1 cache
-const int nb = 32; // nb = 32 works well for most architectures
+const int nb = 32; // (nb should be a power of 2) nb = 32 works well for most architectures 
 
 #pragma omp parallel for
 for( int ib = 0; ib < n; ib += nb )
@@ -125,79 +149,130 @@ for( int ib = 0; ib < n; ib += nb )
                         c[i][j] += a[i][k] * b[k][j];
 ```
 
-Example 4 shows block-partitioning. In this approach we have concentrated the main workload well inside the inner loops.
+[Example 4](#example_4) shows block-partitioning. In this approach we have concentrated the main workload well inside the inner loops.
 
-### 2.4 Data Alignment
+### Data Alignment
+Hardware design favors address-alignment between cache-lines, vector-registers and DRAM. Therefore reading bulk-data from an aligned DRAM address is typically more efficient. For that reason it is beneficial to combine block-processing with data-alignment.
 
-### 2.4 Conclusion
+In case of a matrix representation, a useful strategy is aligning each matrix row accordingly in memory. This can be achieved by using function [`aligned_alloc`](https://en.cppreference.com/w/c/memory/aligned_alloc) for memory allocation and specifying the [`stride`](#data-layout) value as a multiple of the block-size used in data-blocking.
 
-Although Numerical complexity is the most obvious paradigm for computational efficiency. It is sometimes necessary to divert from minimizing numerical complexity in favor of the other paradigms.
+<a id="example_5"></a>
+**Example 5: Aligning all matrices**
 
-The standard matrix multiplication has not the best numerical complexity. The [Strassen Algorithm](https://en.wikipedia.org/wiki/Strassen_algorithm) has a better numerical complexity $ O( n^{log_2 7}) $, but it requires more memory and is more difficult to parallelize. It might therefore have even worse time-complexity for practical range of $ n $.
+``` C
+// nb = block size; choose nb such that 3*nb*nb values fit well into the L1 cache
+const int nb = 32; // (nb should be a power of 2) nb = 32 works well for most architectures 
 
+// stride is set to the smallest multiple of nb larger or equal n
+int stride = n + ( ( n % nb ) > 0 ) ? ( nb - ( n % nb ) ) : 0;
+double* a = aligned_alloc( nb * sizeof( double ), n * stride );
+double* b = aligned_alloc( nb * sizeof( double ), n * stride );
+double* c = aligned_alloc( nb * sizeof( double ), n * stride );
 
+.... // fill a,b with data; set c to zero
 
+int min( int x, int y ) { return x < y ? x : y; }
 
+// time critical part ...
+#pragma omp parallel for
+for( int ib = 0; ib < n; ib += nb )
+    for( int kb = 0; kb < n; kb += nb )
+        for( int jb = 0; jb < n; jb += nb )
+            for( int i = ib; i < min( n, ib + nb ); i++ )
+                for( int k = kb; k < min( n, kb + nb ); k++ )
+                    for( int j = jb; j < min( n, jb + nb ); j++ )
+                        c[ i * stride + j ] += a[ i * stride + k ] * b[ k * stride + j ];
+```
 
-**Table:** Test on a 16-core $\text{Ryzen}^{ \text{TM}} $ 9 7950x platform for examples 1, ..., 4; $ n $ = 1k and $ n $ = 10k.
+In [example 5](#example_5) we spell out the strided access for dynamically allocated matrices. The allocation address and specific `stride` value ensure proper alignment of all rows. With `n` <= `stride` < `n + nb` , only an insignificant amount of memory is wasted.
 
-| Example                 | time (n=1000) | time (n=10000) | time (n=9999) align=1 | time (n=9999) align=16 |
-| ----------------------- | ------------- | -------------- | --------------------- | ---------------------- |
-| 1 (Standard)            | 85 ms         | 805 s          |                       |                        |
-| 2 (+ Inner Parallelity) | 68 ms         | 233 s          |                       |                        |
-| 3 (+ Outer Parallelity) | 9.4 ms        | 22 s           |                       |                        |
-| 4 (+ Data-Locality)     | 7.8 ms        | 10 s           |                       |                        |
+### True Scalability: Summary
 
+The table below demonstrates the performance of all discussed paradigms.
 
-By that definition, **example 4** would be close enough to be called true-scalable while **examples 1, 2 and 3** are not. 
+**Table:** Test on a 24-core $\text{Ryzen}^{ \text{TM}}$ $\text{Threadripper}^{\text{TM}}$ 7960X. The code was compiled with gcc-options `-O3`, `-march-native` and `-fopenmp`.
 
+| Example                 | time/sec (n=3333) | time/sec (n=7173) |
+| ----------------------- | ----------------- | ----------------- |
+| 1 (Standard)            | 86.5              | 1133              |
+| 2 (+ Inner Parallelity) | 13.2              | 144               |
+| 3 (+ Outer Parallelity) | 0.564             | 5.72              |
+| 4 (+ Data-Locality)     | 0.277             | 2.55              |
+| 5 (+ Alignment)         | 0.184             | 1.65              |
 
-## 3 Singular Value Decomposition
+The two values of n are chosen to be coprime to $ n_b $, to show the effect of alignment. Their ratio is chosen such that the numerical complexity is around 10: $(7173/3333)^3 \approx 10$, to make the timing values easier comparable.
 
-Given a mathematical Problem: Whether a true-scalable algorithm exists is not always decidable. Finding a true-scalable algorithm can be significantly more difficult than finding just any algorithmic solution.
+We can observe that the two data-local solutions show the best time-scaling behavior. The last two appear even slightly better than expected. The reason is that outer parallelity works better on larger matrices.
 
-In the following, I'd like to present a true-scalable algorithm for the Singular Value Decomposition.
+We can clearly observe the profound incremental effect on performance each paradigm provides.
 
-### 3.1 Incremental Unitary Transformations
+For sake of completeness, I should mention that the [Strassen Algorithm](https://en.wikipedia.org/wiki/Strassen_algorithm) has better numerical complexity of $ O( n^{log_2 7}) $ than the standard algorithm. However, it requires more memory and is more difficult to parallelize. Therefore, it does not lend itself as well to a true-scalable optimization as the standard algorithm.
 
-Lets express matrix $ M $ in by a generic decomposition $ U $, $ A $, $ V $ of which $ U $, $ V $ are unitary. $ A $ can be any matrix. 
+## Matrix Decomposition
 
-(3.1) 	$M = UAV^*$
+Lets express matrix $ M $ by a generic decomposition $ U $, $ A $, $ V $ of which $ U $, $ V $ are unitary. For the moment $ A $ can be any matrix. 
+
+(1) 	$M = UAV^*$
 
 A trivial decomposition would be: $ U = V = \underline{1} $ and $ A = M $.
 
 The product of a unitary matrix with its adjunct $(P^\ast P)$ is the unity and the product of two unitary matrices is unitary. This is used to convert one decomposition into another:
 
-(3.2) 	$ UAV^\ast = U(P^\ast P)A(Q^\ast Q) V^\ast = (UP^\ast)(PAQ^\ast)(QV^\ast) = U_{new} A_{new} V_{new}^\ast$
+(2) 	$ UAV^\ast = U(P^\ast P)A(Q^\ast Q) V^\ast = (UP^\ast)(PAQ^\ast)(QV^\ast) = U_{new} A_{new} V_{new}^\ast$
 
-Equation (3.2) represents an incremental step.
+Equation (2) represents an incremental step.
 
-Most SVD algorithms diagonalize A incrementally. First by starting with the trivial decomposition and then fining a suitable sequence $ P_i $, $ Q_j $. 
+Most decomposition algorithms convert A incrementally via unitary transformations (UT) into a desired shape. The initial state is the trivial decomposition, Then a suitable UT-sequence $ P_i $, $ Q_j $ is computed to convert $ A $ into the desired shape. 
 
-There are many possible different sequences accomplishing this goal. An algorithm could be sufficiently described by the specific sequence it uses.
+Frequently needed decompositions are:
 
-There are two classes of incremental unitary transformations, which are typically used: The Householder Reflection and the Givens Rotation.
-#### 3.1.1 Householder Reflection (HR)
+**QRD**: $ A $ is upper triangular; $ V $ remains unity; only $ P_i $ are needed.
 
-The [Householder Reflection](https://en.wikipedia.org/wiki/Householder_transformation) is determined by a normalized vector $ w $ and expressed in Matrix form as follows:
+**LQD**: $ A $ is lower triangular; $ U $ remains unity; only $ Q_j $ are needed.
+
+**SVD**: $ A $ is diagonal; both: $ P_i $, $ Q_j $ are needed.
+
+There are many possible different UT-sequences accomplishing this goal. An algorithm could be sufficiently described by the specific sequence it uses.
+
+There are two classes of incremental unitary transformations, which are typically used: The **Givens Rotation** and the **Householder Reflection**.
+
+### Givens Rotation
+
+The [Givens Rotation](https://en.wikipedia.org/wiki/Givens_rotation) (GR) is a unitary operation, applies a 2D rotation on a 2D Vector. In Matrix notation, let $G$ be a givens rotation. The left-side rotation $G \cdot A$ only affects two rows in A. The right-side rotation $A \cdot G$ only affects two columns in A. Both cases can be implemented as a sequence of independent 2D vector rotations, where the i-th 2-vector represents the i-th element in the two affected rows/columns. Hence, the matrix operation has a natural [inner parallelity](#inner-parallelity).
+
+On a [row-major layout](#data-layout) the left-sided operation is well-scalable with minimal DRAM bursts, the right-sided operation is not. Hence: If possible,  $G \cdot A$ should be preferred over $A \cdot G$.
+
+A single Givens Rotation can be used to set one value in A to zero. With a strategic placement of multiple rotations, one can set a specified area in A to zero.
+
+### Householder Reflection
+
+The [Householder Reflection](https://en.wikipedia.org/wiki/Householder_transformation) (HR) is a self-adjoint unitary transformation determined by a normalized vector $ w $ and expressed in Matrix form as follows:
 
 $ H_w = \underline{1} - 2 ww^* $; $ w^*w = 1 $
 
-It can be easily verified that $ H_w $ is self-adjoint. It is also unitary because
+$ H_w $ is unitary because
 
-$ H_w^*H_w = (\underline{1} - 2 ww^*)(\underline{1} - 2 ww^*) = \underline{1} - 4ww^* + 4ww^*ww^* = \underline{1} $
+$ H_w^*H_w = H_wH^*_w = (\underline{1} - 2 ww^*)(\underline{1} - 2 ww^*) = \underline{1} - 4ww^* + 4ww^*ww^* = \underline{1} $
 
-The HR is numerically efficient because applied to a vector $ v $ it can be implemented as $ H_w(v) = \underline{1}-2w(w^*v) $, which has a complexity of $ O(n) $ ($ n = dim( v ) $). 
+The HR is numerically efficient because when applied to a vector $ v $ it can be implemented as $ H_w(v) = \underline{1}-2w(w^*v) $, which has a complexity of $ O(n) $ ($ n = dim( v ) $). 
 
-The HR can be configured to set $ n-1 $ values to zero of a specified vector. This is typically a column or row of a matrix or a smaller section thereof.
+The left-side reflection $H \cdot A$ affects $ n $ rows in A. The right-side reflection $A \cdot H$ affects $ n $ columns in A. 
 
-#### 3.1.2 Givens Rotation (GR)
+The HR can be configured to set $ n-1 $ values to zero. With $H \cdot A$, this would be $ n-1 $ values in a specified column of A. With  $A \cdot H$, it would be $ n-1 $  values in a specified row of A. A strategic placement of multiple HR, one can set a specified area in A to zero. 
 
-The [Givens Rotation](https://en.wikipedia.org/wiki/Givens_rotation) was the method of choice before the householder reflection became more popular. It is a 2D operation ($ n=2 $) and is typically used to set 1 value in a 2-vector to zero. To zero $ n-1 $ elements in an n-vector, one chains $ n-1 $ rotations together. The order of complexity $ O(n) $ is the same as with  the HR. But the actual number of operations needed is by a factor 1.5 higher for $ n \ggg 2 $. For $ n = 2 $ both GR and HR require the same computational effort.
+### GR versus HR
 
-### 3.2 The Golub-Reinsch Algorithm
+GR and HR both can be used to achieve the same goal. Asymptotically HR requires 25% fewer numeric operations than GR. However, HR does not have a natural [inner parallelity](#inner-parallelity) like GR. 
 
-The Golub-Reinsch Algorithm is a classic and popular SVD algorithm. It consists of two phases:
+So far HR has been unchallenged as 'method of choice' for matrix decomposition, due to its numerical advantage over GR. However, considering all aspects of [True-Scalability](#true-scalability), I claim that this should again be open for discussion.
+
+In the context of MOCUT SVD, I worked out a specific left sided HR-Matrix operation with inner parallelity. (s. below)
+
+<a id="2_phase_svd"></a>
+
+## The 2-Phase Golub-Reinsch SVD Algorithm
+
+The Golub-Reinsch Algorithm [1] is a classic and popular SVD algorithm. It consists of two phases:
 
 1. **Bi-Diagonalizing $ A $ via alternating left and right HR.**
 2. **Diagonalizing $ A $ via alternating left and right GR.**
@@ -206,32 +281,41 @@ Bi-Diagonalizing means: Zeroing all elements in $ A $ except the main diagonal a
 
 Phase 1 zeros alternatingly the leftmost non-zero column under the main-diagonal via left UT $ P_i $ , then the uppermost non-zero row right from the sub-diagonal via $ Q_i $. This is done via householder transformation (s. Figure). 
 
-$ P_i $ and $ Q_i $ are tightly coupled: To determine $ P_i $, the $ i $-th column of $ (A_{i-1}Q^*_{i-1}) $ must be known. To determine $ Q_i $, the $ i $-th row of  $ (P_i A_{i-1}) $ must be known. Consequently all of the residual not yet bi-diagonalized portion of A must be accessed before the next UT can be computed. This thwarts data-locality. The outermost loop is fairly long and not independent. This severely limits the effectiveness of outer parallelity because threads need frequent synchronizations.
+$ P_i $ and $ Q_i $ are tightly coupled: To determine $ P_i $, the $ i $-th column of $ (A_{i-1}Q^*_{i-1}) $ must be known. To determine $ Q_i $, the $ i $-th row of  $ (P_i A_{i-1}) $ must be known. Consequently all of the residual not yet bi-diagonalized portion of A must be accessed before the next UT can be computed. This thwarts data-locality an severely limits the use of outer parallelity because the outermost loop is fairly long and not independent.
 
-Hence, phase 1 in the Golub-Reinsch Algorithm is not true-scalable.
+Hence, phase 1 in the Golub-Reinsch Algorithm is not [true-scalable](#true_scalable).
 
-Phase 2 uses left an right Givens Rotations to gradually eliminate sub-diagonal elements. I will show further down that phase 2 can be made true-scalable by using the MOCUT Approach.
+Bi-diagonalization is the best one can achieve in a closed form (meaning: a predictably finite set of transformations). Any attempt to zero an element in the sub-diagonal will re-insert non-zeros somewhere else in the matrix.
 
-### 3.3 The Band-Diagonal Approach
+Hence the second stage: 
 
-The band-diagonal approach is a method to overcome the limitations of the bi-diagonalization phase by splitting it into two stages**:**
+A special iterative algorithm makes $ A $ converge into diagonal form. Theoretically one needs infinitely many steps for the exact solution. It can be proven, however, that the convergence is so fast that an approximation with negligible residual error can be achieved with relatively few cycles in nearly any matrix. Francis [] developed an algorithm for self-adjoint matrices. Based on this work, Kahan, Reinsch and Golub [...] developed later an efficient and stable solution (chasing algorithm) for a general matrix.
 
-1. **Band-Diagonalizing A**.
-2. **Bi-Diagonalizing a band-diagonal A**.
+Describing the full chasing algorithm in detail goes beyond the scope of this paper. At this point, it shall suffice to mention that for the full decomposition, the numerical complexity of phase 2  is similar to the complexity of phase 1. We will later pick up certain details to describe how the chasing-phase can be made [true-scalable](#true_scalable).
 
-#### 3.3.1 Band-Diagonalizing
+<a id="3_phase_svd"></a>
+
+### The 3-Phase Band-Diagonal SVD Approach
+
+The band-diagonal approach is a method to overcome the limitations of the single phase bi-diagonalization.
+
+It can be achieved by splitting it into two stages such that we get three phases altogether:
+
+1. **Band-Diagonalizing $ A $**.
+2. **Bi-Diagonalizing a band-diagonal $ A $**.
+3. **Diagonalizing $ A $ via alternating left and right GR.**
 
 Band-Diagonalizing means: Zeroing all elements in $ A $ except the main diagonal and a band of $ n_b $ immediate sub-diagonals of $ A $. This is done by alternating zeroing a block of $ n_b $ left columns and $ n_b $ upper rows. (s. Figure)
 
-Within a single block $ P_i $ and $ Q_i $ are decoupled: To compute $ P_i $ only those rows of $ A $ need be known upfront, which are to be zeroed. In a transposed manner the same applies to $ Q_i $. 
+Within a single block $ P_i $ and $ Q_i $ are decoupled: To compute $ P_i $, only those rows of $ A $ need be known upfront, which are to be zeroed. In a transposed manner the same applies to $ Q_i $. 
 
 Computing $ P_i $, $ Q_i $ has better data-locality. An accumulated bundle of one-sided householder reflections can be converted into a data-local matrix-matrix multiplication with good outer parallelity. The method is known as the WY-representation of accumulated Householder Reflections [2], [3]. 
 
 I will show further down that the MOCUT Approach achieves true-scalability without requiring the WY-representation.
 
-#### 3.3.2 Bi-Diagonalizing
 
-Bi-diagonalizing a band-diagonal $ A $ is done by 
+
+Bi-diagonalizing a band-diagonal $ A $ (phase 2) is done by 
 
 
 
@@ -356,7 +440,5 @@ TODO
 ## Literature
 
 TODO
-
-
 
 &copy; Johannes B. Steffens
