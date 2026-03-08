@@ -366,13 +366,11 @@ mocut_mat_s_down( &a ); // instance a is cleaned up
 
 ### Custom Data Alignment
 
-MOCUTSVD aligns matrix data to improve on inner parallelity and cache usage for most processors. If you wish to experiment with your own custom alignment, define MOCUT_MEM_ALIGN with a constant indicating the alignment in bytes before including `mucutsvd.h`:
+MOCUTSVD aligns matrix data to improve on inner parallelity and cache usage for most processors. If you wish to experiment with your own custom alignment, define MOCUT_VAL_ALIGN with a constant indicating the alignment in bytes before including `mucutsvd.h`:
 
 ``` C
-#define MOCUT_MEM_ALIGN 32 // aligns matrix rows to multiple of 32 bytes
+#define MOCUT_VAL_ALIGN 32 // aligns matrix rows to multiple of 32 double values (32*8 bytes)
 ```
-
-**Note:** Alignment should be a multiple of `sizeof( double )` == `8 bytes`.
 
 ## Side Effects and Remedies
 

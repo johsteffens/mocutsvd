@@ -279,7 +279,12 @@ The Golub-Reinsch Algorithm [1] is a classic and popular SVD algorithm. It consi
 
 Bi-Diagonalizing means: Zeroing all elements in $ A $ except the main diagonal and one immediate sub-diagonal of $ A $.  This is often the upper sub-diagonal. 
 
-Phase 1 zeros alternatingly the leftmost non-zero column under the main-diagonal via left UT $ P_i $ , then the uppermost non-zero row right from the sub-diagonal via $ Q_i $. This is done via householder transformation (s. Figure). 
+Phase 1 zeros alternatingly the leftmost non-zero column under the main-diagonal via left UT $ P_i $ , then the uppermost non-zero row right from the sub-diagonal via $ Q_i $. This is done via Householder transformation (s. Figure 1). 
+
+![](image/bi/02.png)![](image/bi/04.png)![](image/bi/06.png)![](image/bi/08.png)![](image/bi/10.png)![](image/bi/12.png)![](image/bi/14.png)![](image/bi/16.png)![](image/bi/18.png)![](image/bi/20.png)![](image/bi/21.png)
+
+**Figure 1:** Bi diagonalization with alternating left and right Householder transformations.
+
 
 $ P_i $ and $ Q_i $ are tightly coupled: To determine $ P_i $, the $ i $-th column of $ (A_{i-1}Q^*_{i-1}) $ must be known. To determine $ Q_i $, the $ i $-th row of  $ (P_i A_{i-1}) $ must be known. Consequently all of the residual not yet bi-diagonalized portion of A must be accessed before the next UT can be computed. This thwarts data-locality an severely limits the use of outer parallelity because the outermost loop is fairly long and not independent.
 
@@ -287,9 +292,7 @@ Hence, phase 1 in the Golub-Reinsch Algorithm is not [true-scalable](#true_scala
 
 Bi-diagonalization is the best one can achieve in a closed form (meaning: a predictably finite set of transformations). Any attempt to zero an element in the sub-diagonal will re-insert non-zeros somewhere else in the matrix.
 
-Hence the second stage: 
-
-A special iterative algorithm makes $ A $ converge into diagonal form. Theoretically one needs infinitely many steps for the exact solution. It can be proven, however, that the convergence is so fast that an approximation with negligible residual error can be achieved with relatively few cycles in nearly any matrix. Francis [] developed an algorithm for self-adjoint matrices. Based on this work, Kahan, Reinsch and Golub [...] developed later an efficient and stable solution (chasing algorithm) for a general matrix.
+The second stage is a an iterative algorithm, by which $ A $ converges into diagonal form. Theoretically, infinitely many cycles are needed for the exact solution. However, the convergence is so fast that an approximation with negligible residual error can be achieved with rather few cycles. Francis [] developed a practical algorithm for self-adjoint matrices. Based on this work, Kahan, Reinsch and Golub [...] developed an efficient and stable solution (chasing algorithm) for a general matrix.
 
 Describing the full chasing algorithm in detail goes beyond the scope of this paper. At this point, it shall suffice to mention that for the full decomposition, the numerical complexity of phase 2  is similar to the complexity of phase 1. We will later pick up certain details to describe how the chasing-phase can be made [true-scalable](#true_scalable).
 
@@ -305,7 +308,11 @@ It can be achieved by splitting it into two stages such that we get three phases
 2. **Bi-Diagonalizing a band-diagonal $ A $**.
 3. **Diagonalizing $ A $ via alternating left and right GR.**
 
-Band-Diagonalizing means: Zeroing all elements in $ A $ except the main diagonal and a band of $ n_b $ immediate sub-diagonals of $ A $. This is done by alternating zeroing a block of $ n_b $ left columns and $ n_b $ upper rows. (s. Figure)
+Band-Diagonalizing means: Zeroing all elements in $ A $ except the main diagonal and a band of $ n_b $ immediate sub-diagonals of $ A $. This is done by alternating zeroing a block of $ n_b $ left columns and $ n_b $ upper rows. (s. Figure 2)
+
+![](image/band/02.png)![](image/band/03.png)![](image/band/05.png)![](image/band/07.png)![](image/band/09.png)![](image/band/10.png)
+
+**Figure 2:** Band diagonalization with alternating left and right blocks of Householder transformations.
 
 Within a single block $ P_i $ and $ Q_i $ are decoupled: To compute $ P_i $, only those rows of $ A $ need be known upfront, which are to be zeroed. In a transposed manner the same applies to $ Q_i $. 
 
@@ -361,7 +368,7 @@ The HR can be configured to set $ n-1 $ values to zero of a specified vector. Th
 
 #### 2.2.2 Givens Rotation (GR)
 
-The [Givens Rotation](https://en.wikipedia.org/wiki/Givens_rotation) was the method of choice before the householder reflection became more popular. It is a 2D operation ($ n=2 $) and is typically used to set 1 value in a 2-vector to zero. To zero $ n-1 $ elements in an n-vector, one chains $ n-1 $ rotations together. The order of complexity $ O(n) $ is the same as with  the HR. But the actual number of operations needed is by a factor 1.5 higher for $ n \ggg 2 $. For $ n = 2 $ both GR and HR require the same computational effort.
+The [Givens Rotation](https://en.wikipedia.org/wiki/Givens_rotation) was the method of choice before the Householder reflection became more popular. It is a 2D operation ($ n=2 $) and is typically used to set 1 value in a 2-vector to zero. To zero $ n-1 $ elements in an n-vector, one chains $ n-1 $ rotations together. The order of complexity $ O(n) $ is the same as with  the HR. But the actual number of operations needed is by a factor 1.5 higher for $ n \ggg 2 $. For $ n = 2 $ both GR and HR require the same computational effort.
 
 ### 3 The Golub Reinsch SVD (GR_SVD) 
 
@@ -400,7 +407,7 @@ Let's call the bundles $ P_{b} $ and $ Q_{b} $ :
 
 (4.2) 	$ Q_{b_a} = \prod_{l = a}^{a + n_b} Q_l $, $ a \in \{ 1, n_b, 2n_b, ... \}$
 
-An accumulated bundle of one-sided householder reflections can be converted into a data-local matrix-matrix multiplication. The method is known as the WY representation of accumulated Householder Reflections [2], [3]. 
+An accumulated bundle of one-sided householder reflections can be converted into a data-local matrix-matrix multiplication. The method is known as the WY representation of accumulated Householder reflections [2], [3]. 
 
 While I use a 3-phase SVD, I do not apply the WY representation. Instead, I conceived a different approach that I consider more flexible an can be applied efficiently to all 3 phases.
 
@@ -408,7 +415,7 @@ While I use a 3-phase SVD, I do not apply the WY representation. Instead, I conc
 
 Lets assume we have a left sided transformation (-bundle) as described in Eq. (4.1).
 
-We replace $ P_i $ by a different sequence $ \prod_j {\tilde{P}_{ij}} $ achieving the same objective, such as for example zeroing a set of columns below the diagonal. Note, we do not require strict equality:  $ P_i \neq  \prod_j {\tilde{P}_{ij}} $ . Only the objective of zeroing certain values in A shall be achieved. $ \tilde{P_{ij} } $ are chosen such that $ \tilde{P_{ij}}A $ modifies only a few consecutive rows of $ A $ beginning from the last rows up to the row at the diagonal. If $ \tilde{P_{ij} } $ modifies k rows in can zero $ k-1 $ consecutive values in column $ i $ of A. This also means that the affected rows have to overlap by exactly one row to zero out all values below the diagonal in column $ i $ of A. $ \tilde{P_{ij} } $ need not be a Householder Reflection, it could just as well be realized by multiple consecutive Givens Rotations at a slightly larger computational expense. We can now reformulate equation (4.1) for the entire bundle:
+We replace $ P_i $ by a different sequence $ \prod_j {\tilde{P}_{ij}} $ achieving the same objective, such as for example zeroing a set of columns below the diagonal. Note, we do not require strict equality:  $ P_i \neq  \prod_j {\tilde{P}_{ij}} $ . Only the objective of zeroing certain values in A shall be achieved. $ \tilde{P_{ij} } $ are chosen such that $ \tilde{P_{ij}}A $ modifies only a few consecutive rows of $ A $ beginning from the last rows up to the row at the diagonal. If $ \tilde{P_{ij} } $ modifies k rows in can zero $ k-1 $ consecutive values in column $ i $ of A. This also means that the affected rows have to overlap by exactly one row to zero out all values below the diagonal in column $ i $ of A. $ \tilde{P_{ij} } $ need not be a Householder reflection, it could just as well be realized by multiple consecutive Givens Rotations at a slightly larger computational expense. We can now reformulate equation (4.1) for the entire bundle:
 
 (5.1)	$ \tilde{P}_{b_a} = \prod_{l = a}^{a + n_b} \prod_{j} \tilde{ P }_{lj}$
 

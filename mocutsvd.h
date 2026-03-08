@@ -128,9 +128,9 @@ static inline const char* mocut_err_text( int err_code )
  *  before including this header #define MOCUT_NO_MEM_ALLOC.
  *  In that case function mocut_mat_s_alloc generates an error.
  *
- *  If you wish to customize the memory alignment, before including this header #define MOCUT_MEM_ALIGN with your own preferred value.
+ *  If you wish to customize the data alignment, before including this header #define MOCUT_VAL_ALIGN with your own preferred value.
  *  Example:
- *  #define MOCUT_MEM_ALIGN 0x100
+ *  #define MOCUT_VAL_ALIGN 32
  */
 
 #ifdef MOCUT_NO_MEM_ALLOC
@@ -142,8 +142,12 @@ static inline const char* mocut_err_text( int err_code )
     #include <stdlib.h>
 #endif
 
+#ifndef MOCUT_VAL_ALIGN
+    #define MOCUT_VAL_ALIGN 32
+#endif
+
 #ifndef MOCUT_MEM_ALIGN
-    #define MOCUT_MEM_ALIGN 0x80
+    #define MOCUT_MEM_ALIGN (MOCUT_VAL_ALIGN * sizeof(double))
 #endif
 
 #ifndef MOCUT_MEM_ALLOC

@@ -37,9 +37,11 @@
 *.hex
 bin/
 
-# Specific ececuatbles
+# mocutsvd specific files
 mocutsvd_example*
 mocutsvd_test*
+# for the moment ignore all images and videos
+image/
 
 # Debug files
 *.dSYM/
