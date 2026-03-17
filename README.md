@@ -106,7 +106,7 @@ ___________________________________
 
 ## Detailed Description
 
-MOCUT SVD is an algorithm for singular value decomposition, completely redesigned from scratch.  Given a matrix $ M $, it calculates the matrices $ U^*, \Sigma, V^* $ such that  $M = U \cdot \Sigma \cdot V^*$ .  It bases on the Golub-Kahan-Reinsch approach and inherits its proven stability. However, it deviates from traditional methods in many performance-critical aspects.
+MOCUT SVD is an algorithm for singular value decomposition, completely redesigned from scratch.  Given a matrix $M$, it calculates the matrices $U^*, \Sigma, V^*$ such that  $M = U \cdot \Sigma \cdot V^*$ .  It bases on the Golub-Kahan-Reinsch approach and inherits its proven stability. However, it deviates from traditional methods in many performance-critical aspects.
 
 **MOCUT** is a shortcut for a special kind of recurring unitary transformation pattern I designed for this SVD solution. More details can be found in the whitepaper: [MOCUT SVD: Singular Value Decomposition via Monoclinic Unitary Transformations](doc/mocutsvd.md).
 
@@ -119,7 +119,7 @@ At the same time the code maintains high portability: It only requires complianc
 This level of portability is achieved by utilizing coding paradigms that allow the compiler to apply platform specific optimizations. Outer parallelity is achieved via [Open MP](https://en.wikipedia.org/wiki/OpenMP).
 
 **Note:** 
-MOCUT SVD generates the matrices of singular vectors in their transposed form: $ U^* $, $ V^* $, where singular vectors are row-vectors. If desired, you can convert the matrix back to the traditional form via function ```mocut_mat_s_copy_transposed```.
+MOCUT SVD generates the matrices of singular vectors in their transposed form: $U^*$, $V^*$, where singular vectors are row-vectors. If desired, you can convert the matrix back to the traditional form via function ```mocut_mat_s_copy_transposed```.
 
 ### Error Handling
 
@@ -142,7 +142,7 @@ The matrix is represented by structure ```mocut_mat_s```, which contains the fol
 * ```size_t stride``` : Number of elements between the start of two successive rows. It is ```stride >= cols```.
 * ```double* data```: Location of matrix data in memory.
 
-The data-layout is 'strided row-major'. This means that the element ```[i][j]``` is accessed as ```data[ i * stride + j ]```;  $  i \in \{ 0, ..., \text{rows}-1 \} $ $,  j \in \{ 0, ..., \text{cols}-1 \}$.
+The data-layout is 'strided row-major'. This means that the element ```[i][j]``` is accessed as ```data[ i * stride + j ]```;  $i \in \{ 0, ..., \text{rows}-1 \},  j \in \{ 0, ..., \text{cols}-1 \}$.
 
 The matrix `matrix-alloc` function chooses the `stride` value equal to or slightly above `cols` such that the beginning of rows are aligned to specific memory addresses optimal for caching and inner parallelity. The user may also setup a matrix manually, referencing external data via `matrix-setup` function.
 
