@@ -2,7 +2,7 @@
 
 ## What it is
 
-Singular Value Decomposition is the method of finding the three components $U, \Sigma, V$ to an arbitrary (m x n) matrix $M$, which satisfy the equation $M = U \cdot \Sigma \cdot V^*$ . Where $\Sigma$ is a diagonal matrix containing singular values and $U$, $V$ are unitary matrices containing left and right singular vectors. The SVD algorithm is of critical importance in science and engineering.
+Singular Value Decomposition is the method of finding the three components $U, \Sigma, V$ to an arbitrary (m x n) matrix $M$, which satisfy the equation $M = U \cdot \Sigma \cdot V^\ast$ . Where $\Sigma$ is a diagonal matrix containing singular values and $U$, $V$ are unitary matrices containing left and right singular vectors. The SVD algorithm is of critical importance in science and engineering.
 
 MOCUT SVD is an efficient, easy-to-use and highly portable stand-alone-implementation for C or C++ programs. This SVD solution was completely redesigned from scratch. It contains several improvements compared to traditional implementations and is specially optimized for modern CPU architectures.
 
@@ -106,7 +106,7 @@ ___________________________________
 
 ## Detailed Description
 
-MOCUT SVD is an algorithm for singular value decomposition, completely redesigned from scratch.  Given a matrix $M$, it calculates the matrices $U^*, \Sigma, V^*$ such that  $M = U \cdot \Sigma \cdot V^*$ .  It bases on the Golub-Kahan-Reinsch approach and inherits its proven stability. However, it deviates from traditional methods in many performance-critical aspects.
+MOCUT SVD is an algorithm for singular value decomposition, completely redesigned from scratch.  Given a matrix $M$, it calculates the matrices $U^\ast, \Sigma, V^\ast$ such that  $M = U \cdot \Sigma \cdot V^\ast$ .  It bases on the Golub-Kahan-Reinsch approach and inherits its proven stability. However, it deviates from traditional methods in many performance-critical aspects.
 
 **MOCUT** is a shortcut for a special kind of recurring unitary transformation pattern I designed for this SVD solution. More details can be found in the whitepaper: [MOCUT SVD: Singular Value Decomposition via Monoclinic Unitary Transformations](doc/mocutsvd.md).
 
@@ -119,7 +119,7 @@ At the same time the code maintains high portability: It only requires complianc
 This level of portability is achieved by utilizing coding paradigms that allow the compiler to apply platform specific optimizations. Outer parallelity is achieved via [Open MP](https://en.wikipedia.org/wiki/OpenMP).
 
 **Note:** 
-MOCUT SVD generates the matrices of singular vectors in their transposed form: $U^*$, $V^*$, where singular vectors are row-vectors. If desired, you can convert the matrix back to the traditional form via function ```mocut_mat_s_copy_transposed```.
+MOCUT SVD generates the matrices of singular vectors in their transposed form: $U^\ast$, $V^\ast$, where singular vectors are row-vectors. If desired, you can convert the matrix back to the traditional form via function ```mocut_mat_s_copy_transposed```.
 
 ### Error Handling
 
@@ -289,19 +289,19 @@ The matrix `matrix-alloc` function chooses the `stride` value equal to or slight
 
 * **```int mocut_svd( mocut_mat_s* a, mocut_mat_s* u, mocut_mat_s* v );```**
 
-```mocut_svd``` performs the thin SVD on a (m x n)-Matrix: $M \rightarrow U^*, \Sigma, V^*$ .
+```mocut_svd``` performs the thin SVD on a (m x n)-Matrix: $M \rightarrow U^\ast, \Sigma, V^\ast$ .
 
 The matrices are being modified during execution. Matrix `a` must be initialized as $M$ before execution. After execution it is changed to $\Sigma$ : The diagonal elements represents the singular values, all other elements are set to zero.
 
-Arguments `u`, `v` are optional. They represent $U^*$ and $V^*$ respectively containing the singular vectors as row vectors. If either is not needed, pass `NULL` as argument. 
+Arguments `u`, `v` are optional. They represent $U^\ast$ and $V^\ast$ respectively containing the singular vectors as row vectors. If either is not needed, pass `NULL` as argument. 
 
-If $U^*$ or $V^*$ is needed, you can pass either an empty instance, or you can pass a pre-sized matrix (via `matrix-alloc` or `matrix-setup`). 
+If $U^\ast$ or $V^\ast$ is needed, you can pass either an empty instance, or you can pass a pre-sized matrix (via `matrix-alloc` or `matrix-setup`). 
 
 If it is empty, `mocut_svd` will allocate it to the correct size. If it is non-empty, the size must be `(k x m)` for `u` and `(k x n)` for `v` with `k = min(m,n)`.
 
 **Convergence:**
 
-The final phase of the SVD algorithm cannot be expressed in a closed form. Instead an iterative process is needed that converges to the correct result. The algorithm is designed such that this convergence is fast, stable and almost always guaranteed. Only on a very exotic matrix $M$ might convergence be impaired. For this very rare case, SVD returns the warning `MOCUT_WRN_CONVERGENCE`. It indicates that the reconstruction  $U \cdot \Sigma \cdot V^*$ might deviate numerically from $M$.
+The final phase of the SVD algorithm cannot be expressed in a closed form. Instead an iterative process is needed that converges to the correct result. The algorithm is designed such that this convergence is fast, stable and almost always guaranteed. Only on a very exotic matrix $M$ might convergence be impaired. For this very rare case, SVD returns the warning `MOCUT_WRN_CONVERGENCE`. It indicates that the reconstruction  $U \cdot \Sigma \cdot V^\ast$ might deviate numerically from $M$.
 
 **Return Value:**
 
