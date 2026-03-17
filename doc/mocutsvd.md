@@ -11,7 +11,7 @@
 
 [Singular Value Decomposition](https://en.wikipedia.org/wiki/Singular_value_decomposition) (SVD) is fundamentally important in linear algebra.
 
-The SVD decomposes a *m x n* Matrix *M* into Matrices $ U $, $\Sigma$ , $ V $ such that $\Sigma$ is [diagonal](https://en.wikipedia.org/wiki/Diagonal_matrix) and  $ U $, $ V $ are both [unitary](https://en.wikipedia.org/wiki/Unitary_matrix) and $M = U \cdot \Sigma \cdot V^\ast$. 
+The SVD decomposes a *m x n* Matrix *M* into Matrices $U$, $\Sigma$ , $V$ such that $\Sigma$ is [diagonal](https://en.wikipedia.org/wiki/Diagonal_matrix) and  $U$, $V$ are both [unitary](https://en.wikipedia.org/wiki/Unitary_matrix) and $M = U \cdot \Sigma \cdot V^\ast$. 
 
 A SVD exists for any matrix. Designing a fast and numerically stable SVD algorithm, however, offers challenges.
 
@@ -21,29 +21,29 @@ In this paper, I first cover how SVD is commonly approached, then describe the M
 
 ## Matrix Decomposition
 
-Lets express matrix $ M $ by a generic decomposition $ U $, $ A $, $ V $ of which $ U $, $ V $ are unitary. For the moment $ A $ can be any matrix. 
+Lets express matrix $M$ by a generic decomposition $U$, $A$, $V$ of which $U$, $V$ are unitary. For the moment $A$ can be any matrix. 
 
 **(1)** 	$M = UAV^\ast$
 
-A trivial decomposition would be: $ U = V = \underline{1} $ and $ A = M $.
+A trivial decomposition would be: $U = V = \underline{1} $ and $A = M$.
 
 The product of a unitary matrix with its adjunct $(P^\ast P)$ is the unity and the product of two unitary matrices is unitary. This is used to convert one decomposition into another:
 
-**(2)** 	$ UAV^\ast = U(P^\ast P)A(Q^\ast Q) V^\ast = (UP^\ast)(PAQ^\ast)(QV^\ast) = U_{new} A_{new} V_{new}^\ast$
+**(2)** 	$UAV^\ast = U(P^\ast P)A(Q^\ast Q) V^\ast = (UP^\ast)(PAQ^\ast)(QV^\ast) = U_{new} A_{new} V_{new}^\ast$
 
 Equation (2) represents an incremental step.
 
 Most decomposition algorithms convert A incrementally via unitary transformations (UT) into a desired shape. The initial state is the trivial decomposition, then a suitable UT-sequence $ P_i $, $ Q_j $ is computed to convert $A$ into the desired shape. 
 
-The incremental conversions on $U$ and $ V $ are called ***back-transformations***. Sometimes only one or even none is needed and the back transformations can be omitted accordingly.
+The incremental conversions on $U$ and $V$ are called ***back-transformations***. Sometimes only one or even none is needed and the back transformations can be omitted accordingly.
 
 Frequently needed decompositions are:
 
-**QRD**: $ A $ is upper triangular; $ V $ remains unity; only $ P_i $ are needed.
+**QRD**: $A$ is upper triangular; $V$ remains unity; only $P_i$ are needed.
 
-**LQD**: $ A $ is lower triangular; $ U $ remains unity; only $ Q_j $ are needed.
+**LQD**: $A$ is lower triangular; $U$ remains unity; only $Q_j$ are needed.
 
-**SVD**: $ A $ is diagonal; both: $ P_i $, $ Q_j $ are needed.
+**SVD**: $A$ is diagonal; both: $P_i$, $Q_j$ are needed.
 
 There are many possible different UT-sequences for the same decomposition. An algorithm can be described by the specific sequence it employs.
 
@@ -54,7 +54,7 @@ There are two commonly used classes of incremental unitary transformations:
 
 ## Givens Rotation
 
-The [Givens Rotation](https://en.wikipedia.org/wiki/Givens_rotation) (GR) is a unitary transformation, which applies a 2D rotation on a 2D Vector. It is defined by a rotation angle $ \phi $. 
+The [Givens Rotation](https://en.wikipedia.org/wiki/Givens_rotation) (GR) is a unitary transformation, which applies a 2D rotation on a 2D Vector. It is defined by a rotation angle $\phi$. 
 
 $G_\phi(v) = \left( \begin{matrix} av_1 -bv_2 \\ bv_1 + av_2 \end{matrix} \right)$ with  $a=cos(\phi)$ and $b = sin(\phi)$
 
@@ -66,23 +66,23 @@ A single Givens Rotation can be used to set one value in A to zero. With a strat
 
 ## Householder Reflection
 
-The [Householder Reflection](https://en.wikipedia.org/wiki/Householder_transformation) (HR) is a self-adjoint unitary transformation determined by a normalized vector $ w $ and expressed in matrix-form as follows:
+The [Householder Reflection](https://en.wikipedia.org/wiki/Householder_transformation) (HR) is a self-adjoint unitary transformation determined by a normalized vector $w$ and expressed in matrix-form as follows:
 
-$ w^\astw = 1 $
+$w^\astw = 1$
 
-$ H_w = \underline{1} - 2 ww^\ast $ 
+$H_w = \underline{1} - 2 ww^\ast$ 
 
-$ H_w $ is unitary because
+$H_w$ is unitary because
 
-$ H_w^\astH_w = H_wH^\ast_w = (\underline{1} - 2 ww^\ast)(\underline{1} - 2 ww^\ast) = \underline{1} - 4ww^\ast + 4ww^\astww^\ast = \underline{1} $
+$H_w^\astH_w = H_wH^\ast_w = (\underline{1} - 2 ww^\ast)(\underline{1} - 2 ww^\ast) = \underline{1} - 4ww^\ast + 4ww^\astww^\ast = \underline{1}$
 
-The HR is numerically efficient because $ H_w(v) = \underline{1}-2w(w^\astv) $, which has a complexity of $ O(n) $, ($ n = dim( v ) $). 
+The HR is numerically efficient because $H_w(v) = \underline{1}-2w(w^\astv)$, which has a complexity of $O(n)$, ($n = dim( v )$). 
 
-The left-side reflection $H \cdot A$ affects $ n $ rows in A. The right-side reflection $A \cdot H$ affects $ n $ columns in A. 
+The left-side reflection $H \cdot A$ affects $n$ rows in A. The right-side reflection $A \cdot H$ affects $n$ columns in $A$. 
 
-The HR can be configured to set $ n-1 $ values in a specific vector to zero. A strategic placement of multiple HR, one can set a specified area in A to zero. 
+The HR can be configured to set $n-1$ values in a specific vector to zero. A strategic placement of multiple HR, one can set a specified area in $A$ to zero. 
 
-GR and HR both can be used to achieve the same goal. Asymptotically ($n \gg 1$) a Householder reflection requires 25% fewer numeric operations than a corresponding sequence of ($ n-1 $) givens rotations. Givens rotations are more localized and thus offer more flexibility in algorithm design.
+GR and HR both can be used to achieve the same goal. Asymptotically ($n \gg 1$) a Householder reflection requires 25% fewer numeric operations than a corresponding sequence of ($n-1$) givens rotations. Givens rotations are more localized and thus offer more flexibility in algorithm design.
 
 HR on a single vector has no natural [inner parallelity](true_scalability.md#inner-parallelity), however, it can be performed with inner parallelity on a level 2 matrix-operation. We will show later how it is done.
 
@@ -93,13 +93,13 @@ The Golub-Reinsch Algorithm [2] is a classic and popular SVD algorithm. It consi
 1. **Bi-Diagonalizing $A$ via alternating left and right Householder reflections.**
 2. **Diagonalizing $A$ via alternating left and right Givens rotations: GR-Chasing.**
 
-Bi-Diagonalizing means: Zeroing all elements in $ A $ except the main diagonal and one immediate sub-diagonal of $ A $.
+Bi-Diagonalizing means: Zeroing all elements in $A$ except the main diagonal and one immediate sub-diagonal of $A$.
 
-Phase 1 zeros alternatingly the leftmost non-zero column under the main-diagonal via left UT $ P_i $ , then the uppermost non-zero row right from the sub-diagonal via $ Q_i $. This is done via Householder transformation as depicted in the following figure:
+Phase 1 zeros alternatingly the leftmost non-zero column under the main-diagonal via left UT $P_i$ , then the uppermost non-zero row right from the sub-diagonal via $Q_i$. This is done via Householder transformation as depicted in the following figure:
 
 ![](image/bi_a/vis_000000.png)![](image/bi_a/vis_000001.png)![](image/bi_a/vis_000002.png)![](image/bi_a/vis_000003.png)![](image/bi_a/vis_000004.png)![](image/bi_a/vis_000005.png)![](image/bi_a/vis_000006.png)![](image/bi_a/vis_000007.png) **....** ![](image/bi_a/vis_000048.png)
 
-**Figure 1:** Bi diagonalizing $ A $ with alternating left and right Householder transformations. 
+**Figure 1:** Bi diagonalizing $A$ with alternating left and right Householder transformations. 
 
 ##### Color-Scheme 
 
@@ -109,15 +109,15 @@ Phase 1 zeros alternatingly the leftmost non-zero column under the main-diagonal
 * Blue: Already zeroed values.
 
 
-$ P_i $ and $ Q_i $ are tightly coupled: To determine $ P_i $, the $ i $-th column of $ (A_{i-1}Q^\ast_{i-1}) $ must be known. To determine $ Q_i $, the $ i $-th row of  $ (P_i A_{i-1}) $ must be known. Consequently all of the residual not yet bi-diagonalized portion of A must be accessed before the next UT can be computed. This thwarts data-locality an severely limits [outer-parallelity](true_scalability.md#outer-parallelity) because the outermost loop is fairly long and not independent.
+$P_i$ and $Q_i$ are tightly coupled: To determine $P_i$, the $i$-th column of $(A_{i-1}Q^\ast_{i-1})$ must be known. To determine $Q_i$, the $i$-th row of  $(P_i A_{i-1})$ must be known. Consequently all of the residual not yet bi-diagonalized portion of A must be accessed before the next UT can be computed. This thwarts data-locality an severely limits [outer-parallelity](true_scalability.md#outer-parallelity) because the outermost loop is fairly long and not independent.
 
 Hence, phase 1 in the Golub-Reinsch Algorithm is not [true-scalable](#true_scalable).
 
 Bi-diagonalization is the best one can achieve in a closed form (meaning: a predictably finite set of transformations). Any attempt to zero an element in the sub-diagonal will re-insert non-zeros somewhere else in the matrix.
 
-The second stage is a an iterative algorithm, by which $ A $ converges into diagonal form. Theoretically, infinitely many cycles are needed for the exact solution. However, the convergence is so fast that an approximation with negligible residual error can be achieved with rather few cycles. Francis [3] [4] developed a practical algorithm for self-adjoint matrices. Later, Golub, Reinsch [2] [5] found an efficient and stable solution (chasing algorithm) for a general matrix.
+The second stage is a an iterative algorithm, by which $A$ converges into diagonal form. Theoretically, infinitely many cycles are needed for the exact solution. However, the convergence is so fast that an approximation with negligible residual error can be achieved with rather few cycles. Francis [3] [4] developed a practical algorithm for self-adjoint matrices. Later, Golub, Reinsch [2] [5] found an efficient and stable solution (chasing algorithm) for a general matrix.
 
-Describing the full chasing algorithm goes beyond the scope of this document. At this point, it shall suffice to mention that the computational effort on $ A$  alone is (nearly) negligible compared to phase 1 and therefore needs no specific consideration with respect to parallelity. The back-transformation-effort on $U$ and $V$, on the other hand, is significant and needs careful optimization. We will later pick up certain details to describe how the chasing-phase can be made [true-scalable](#true_scalable).
+Describing the full chasing algorithm goes beyond the scope of this document. At this point, it shall suffice to mention that the computational effort on $A$  alone is (nearly) negligible compared to phase 1 and therefore needs no specific consideration with respect to parallelity. The back-transformation-effort on $U$ and $V$, on the other hand, is significant and needs careful optimization. We will later pick up certain details to describe how the chasing-phase can be made [true-scalable](#true_scalable).
 
 ## The DC Approach
 
@@ -131,19 +131,19 @@ The band-diagonal approach was proposed by B. Lang [8] in order to overcome the 
 
 It can be achieved by splitting it into two stages such that we get three phases altogether:
 
-1. **Band-Diagonalizing $ A $**.
-2. **Bi-Diagonalizing a band-diagonal $ A$**.
-3. **Diagonalizing $ A $**
+1. **Band-Diagonalizing $A$**.
+2. **Bi-Diagonalizing a band-diagonal $A$**.
+3. **Diagonalizing $A$**
 
 Phase 3 can either be the [GR-Chasing](#the-golub-reinsch-svd-approach) algorithm or the [DC approach](#the-dc-approach).
 
-Band-Diagonalizing means: Zeroing all elements in $ A $ except the main diagonal and a band of $ n_b $ immediate sub-diagonals of $ A $. This is done by alternating zeroing a block of $ n_b $ left columns and $ n_b $ upper rows. (s. Figure 2)
+Band-Diagonalizing means: Zeroing all elements in $A$ except the main diagonal and a band of $n_b$ immediate sub-diagonals of $A$. This is done by alternating zeroing a block of $n_b$ left columns and $n_b$ upper rows. (s. Figure 2)
 
 ![](image/band_a/vis_000000.png)![](image/band_a/vis_000001.png)![](image/band_a/vis_000002.png)![](image/band_a/vis_000003.png)![](image/band_a/vis_000004.png)![](image/band_a/vis_000005.png)![](image/band_a/vis_000006.png)![](image/band_a/vis_000007.png)![](image/band_a/vis_000008.png)
 
 **Figure 2:** Band diagonalization with alternating left and right blocks of Householder transformations. (See also [Color Scheme](#color-scheme))
 
-Within a single block $ P_i $ and $ Q_i $ are decoupled: To compute $ P_i $, only those rows of $ A $ need be known upfront, which are to be zeroed. In a transposed manner the same applies to $ Q_i $. 
+Within a single block $P_i$ and $Q_i$ are decoupled: To compute $P_i$, only those rows of $A$ need be known upfront, which are to be zeroed. In a transposed manner the same applies to $Q_i$. 
 
 An accumulated bundle of one-sided householder reflections can be converted into an efficient matrix-matrix multiplication. The method is known as the WY-representation of accumulated Householder Reflections [9]. 
 
@@ -159,7 +159,7 @@ He used left and right HR in a chasing algorithm to reduce the banded matrix to 
 
 **Figure 3b:** The sweep in figure 3a is repeated on the residual lower-right partition until the entire matrix is bi-diagonal.
 
-The operations temporarily introduce off-band non-zeros in A, which will be chased down with alternating left and right HR. The process is fairly cheap on $ A $, requiring only $ O(n^2n_b) $ operations. With typically $n_b \ll n$, significant parallelization is not needed on $ A $.
+The operations temporarily introduce off-band non-zeros in A, which will be chased down with alternating left and right HR. The process is fairly cheap on $A$, requiring only $O(n^2n_b)$ operations. With typically $n_b \ll n$, significant parallelization is not needed on $A$.
 
 The back-transformation on $U,V$, on the other hand, has approximately the same complexity as band-diagonalization. Therefore, this part should be done with careful optimization.  B. Lang [9] showed that the back-transformations can be rearranged in a cache-efficient manner and he suggests using the WY-representation for accrued left and right HR.
 
@@ -169,21 +169,21 @@ His work spawned efforts on adapting the 3-phase solution to more specialized ha
 
 The MOCUT SVD is a 3-phase algorithm. Its distinction from the previously discussed 3-phase approach is its usage of accrued unitary transformations. It does not attempt use the WY-Representation, is not dependent on any BLAS-library and it is designed for general purpose CPUs rather than specialized hardware. It achieves its performance advantage by chopping up the sequence of transformation into a set of suitable *"atomic"* transformations, and then finding a permutation with improved [data-locality](true_scalability.md#data-locality)
 
-To describe this approach, we begin with the observation that for all time-critical operations, we can use a set of accrued unitary transformations: In Phase 1, this applies to matrices $ A $, $ U $ and $ V $. In Phases 2 and 3, only back-transformations on $ U $ and $ V $ are relevant: Residual computational effort on band-diagonal $ A $ is negligible in comparison.
+To describe this approach, we begin with the observation that for all time-critical operations, we can use a set of accrued unitary transformations: In Phase 1, this applies to matrices $A$, $U$ and $V$. In Phases 2 and 3, only back-transformations on $U$ and $V$ are relevant: Residual computational effort on band-diagonal $A$ is negligible in comparison.
 
 Let's assume we have a set of accrued unitary transformations.
 
-$ P = \prod_i P_i $
+$P = \prod_i P_i$
 
-$ Q^\ast = \prod_j Q^\ast_j $
+$Q^\ast = \prod_j Q^\ast_j$
 
-$U$ and $ V $ shall be stored in their (conjugate) transposed form. Then matrices will be updated as follows
+$U$ and $V$ shall be stored in their (conjugate) transposed form. Then matrices will be updated as follows
 
-$ A \rightarrow \left( \left( P A \right) Q^\ast \right)$
+$A \rightarrow \left( \left( P A \right) Q^\ast \right)$
 
-$ U^\ast \rightarrow P U^\ast $
+$U^\ast \rightarrow P U^\ast$
 
-$ V^\ast \rightarrow Q V^\ast $
+$V^\ast \rightarrow Q V^\ast$
 
 In this setting, we are facing mostly left-sided atomic transformations, so we focus on analyzing this form and generalize where appropriate.
 
@@ -195,30 +195,30 @@ Let's look at the left-sided band-operation in phase 1, which zeros a band of co
 
 We can describe it as a sequence of householder reflections, each zeroing a column on A:
 
-**(1)**	$ P = \prod_i P_i $
+**(1)**	$P = \prod_i P_i$
 
 
-Each operation changes nearly the entire matrix. It has therefore poor data-locality. We want to find a different set of transformations with better locality. We do this by subdividing each $ P_i $ into a chain of smaller transformations, each affecting a smaller section of rows as shown below:
+Each operation changes nearly the entire matrix. It has therefore poor data-locality. We want to find a different set of transformations with better locality. We do this by subdividing each $P_i$ into a chain of smaller transformations, each affecting a smaller section of rows as shown below:
 
 ![](image/bi_sub_a/vis_000001.png)![](image/bi_sub_a/vis_000002.png)![](image/bi_sub_a/vis_000003.png)![](image/bi_sub_a/vis_000004.png) **...**
 
 **Figure 4:** Zeroing a row by multiple smaller atomic transformations, each affecting a contiguous section of rows.
 
-**(2)**	$ P_i = \prod_j P_{i,j} $
+**(2)**	$P_i = \prod_j P_{i,j}$
 
 We call the $P_{i,j}$ ***atomic*** when each is affecting a portion of contiguous rows in the matrix, which is small enough for cache efficient block-operations. Atomic transformations could be Householder reflections or a sequence of adjacent Givens rotations.
 
-Note that each must overlap with the preceding operation by exactly one column. That is because for a transformation affecting $ n $ rows, only $ n - 1 $ values are zeroed. 
+Note that each must overlap with the preceding operation by exactly one column. That is because for a transformation affecting $n$ rows, only $n - 1$ values are zeroed. 
 
 With **(1)** and **(2)**, we get
 
-**(3)**	$ P = \prod_i \left( \prod_j P_{i,j} \right) $
+**(3)**	$P = \prod_i \left( \prod_j P_{i,j} \right)$
 
-It is easy to see that $P_{i1}$ affects the bottom part of the matrix, $P_{i2}$ the next portion above it and so on. So, performing transformations with same $k$ together should have better locality. We seek a $P$-invariant permutation that swaps the sequence-order in $ i $ and $ j $:
+It is easy to see that $P_{i1}$ affects the bottom part of the matrix, $P_{i2}$ the next portion above it and so on. So, performing transformations with same $k$ together should have better locality. We seek a $P$-invariant permutation that swaps the sequence-order in $i$ and $j$:
 
-**(4)**	$ P = \prod_j \left( \prod_i P_{i,j} \right) $
+**(4)**	$P = \prod_j \left( \prod_i P_{i,j} \right)$
 
-**(5)**	The permutation **(3)** $ \rightarrow $ **(4)** is valid when $P_{i,j}$ and $P_{k,l}$ are commutative $\forall ( j>l \and i < k )$.
+**(5)**	The permutation **(3)** $\rightarrow$ **(4)** is valid when $P_{i,j}$ and $P_{k,l}$ are commutative $\forall ( j>l \and i < k )$.
 
 Condition **(5)** requires $P_{i+1,j}$ and $P_{i,j + 1}$ to be commutative. Since $P_{i,j}$ and $P_{i,j + 1}$ overlap by one row, we must provide extra  clearance for $P_{i+1,j}$. We therefore choose $P_{i+1,j}$ to overlap with the rows of $P_{i,j}$ but shifted down by one row: If  $P_{i,j}$ affects rows $\{4,5,6,7\}$, then $P_{i+1,j}$ affects rows  $\{5,6,7,8\}$ and so on. When the bottom of the matrix is reached, the transformation would be truncated accordingly. This generates an oblique pattern as depicted in figure 5. 
 
@@ -249,7 +249,7 @@ If the matrix is square or portrait shaped (rows >= columns), one can compute th
 
 ### Phase 2
 
-Recall that phase 2 uses atomic transformations in multiple sweeps. Each sweep extends the bi-diagonal portion by one row and column. For of simplicity we keep using the notation $P_{i,k}$ for left-transformations  *-- just remember, that these are not the same as in phase 1 --* ;  $ i $  shall denote the sweep-number and $ j $ the atomic-step within a sweep.
+Recall that phase 2 uses atomic transformations in multiple sweeps. Each sweep extends the bi-diagonal portion by one row and column. For of simplicity we keep using the notation $P_{i,k}$ for left-transformations  *-- just remember, that these are not the same as in phase 1 --* ;  $i$  shall denote the sweep-number and $j$ the atomic-step within a sweep.
 
 $P_{1,1}$![](image/band_bi_a/vis_000002.png)$P_{1,2}$![](image/band_bi_a/vis_000004.png)$P_{1,3}$![](image/band_bi_a/vis_000006.png)$P_{1,4}$![](image/band_bi_a/vis_000008.png)
 
@@ -263,7 +263,7 @@ $P_{3,1}$![](image/band_bi_a/vis_000020.png)$P_{3,2}$![](image/band_bi_a/vis_000
 
 Within a sweep, all atomic transformations affect affect disjointed rows. Therefore the back-transformation could also be done in reverse order. Furthermore, if we look (vertically) at the same atomic-step in subsequent sweeps, we find that the affected rows are shifted down by one row. 
 
-So, the back-transformation on $ U $ could be done in this order:
+So, the back-transformation on $U$ could be done in this order:
 
 $P_{1,4} \rightarrow P_{2,4} \rightarrow P_{3,4} \rightarrow \ldots \rightarrow$
 
@@ -277,9 +277,9 @@ These form the same monoclinic patterns as described in phase 1. Therefore, we c
 
 ### Phase 3
 
-Phase 3 of MOCUT SVD is based on bi-diagonal to diagonal phase by the Golub-Reinsch approach [2] [12]. The operations on $ A $ yield a sequence of adjacent Givens rotations for the back-transformation on $ U^\ast $ and $ V^\ast $: These rotations operate on a contiguous partition in multiple cycles. Each cycle process rows in that partition from top to bottom. Each single rotation affects two adjacent rows. Two subsequent rotations within a cycle affect two subsequent pairs of rows, which overlap by one row. 
+Phase 3 of MOCUT SVD is based on bi-diagonal to diagonal phase by the Golub-Reinsch approach [2] [12]. The operations on $A$ yield a sequence of adjacent Givens rotations for the back-transformation on $U^\ast$ and $V^\ast$: These rotations operate on a contiguous partition in multiple cycles. Each cycle process rows in that partition from top to bottom. Each single rotation affects two adjacent rows. Two subsequent rotations within a cycle affect two subsequent pairs of rows, which overlap by one row. 
 
-Within a cycle, we combine a set of maximally $ n $ subsequent givens rotations to form an atomic unitary transformation, which affects $n+1$ rows. Two subsequent atomic transformations within a cycle overlap by one row. This transformation pattern is the same as in phase 1 except that we use Givens rotations instead of Householder reflections and the direction of preocessing rows is reversed. We can therefore apply the same reasoning to construct a permutation that forms data-local blocks of accrued transformations. Because subsequent atomic transformations overlap by one row, these blocks assume a monoclinic shape in the same manner as already described in [phase 1](#phase-1). 
+Within a cycle, we combine a set of maximally $n$ subsequent givens rotations to form an atomic unitary transformation, which affects $n+1$ rows. Two subsequent atomic transformations within a cycle overlap by one row. This transformation pattern is the same as in phase 1 except that we use Givens rotations instead of Householder reflections and the direction of preocessing rows is reversed. We can therefore apply the same reasoning to construct a permutation that forms data-local blocks of accrued transformations. Because subsequent atomic transformations overlap by one row, these blocks assume a monoclinic shape in the same manner as already described in [phase 1](#phase-1). 
 
 ### Outer Parallelity
 
@@ -287,17 +287,17 @@ Within a cycle, we combine a set of maximally $ n $ subsequent givens rotations 
 
 For left-sided transformation $PA$, $PU^\ast$, $QV^\ast$ we can partition the operand into multiple blocks of columns. The transformation is independent across blocks and can therefore run in parallel (e.g. one thread per block). For left sided operations ($AQ^\ast$) the same reasoning applies by partitioning the operand into blocks of rows.
 
-For optimal efficiency, as many transformations as possible should be accrued before splitting the processing into independent threads. For transformations on $A$, outer-parallelization is only required (and feasible) for phase 1. Back transformations on $ U^\ast $ and $ V^\ast $ can be done in parallel in all three phases.
+For optimal efficiency, as many transformations as possible should be accrued before splitting the processing into independent threads. For transformations on $A$, outer-parallelization is only required (and feasible) for phase 1. Back transformations on $U^\ast$ and $V^\ast$ can be done in parallel in all three phases.
 
 ### Temporary Storage of atomic Transformations
 
 For optimal outer parallelity many atomic transformation should be collected before applying them. Storing can be efficiently done by temporarily re-purposing the space of matrix A, which has already been zeroed.
 
-The Householder reflection is defined by its $ n $-dimensional vector $ w $. 
+The Householder reflection is defined by its $n$-dimensional vector $w$. 
 
-The transformation is invariant to negating $ w $: $ H_w = \underline{1} - 2 ww^\ast = \underline{1} - 2 (-w)(-w)^\ast$. We therefore may choose $ w $ such that its first component has a predictable sign (e.g. non-negative). Then, we only need to store the $ n-1 $ remaining components of $ w $, and reconstruct the first one from the condition $w^\astw = 1$.
+The transformation is invariant to negating $w$: $H_w = \underline{1} - 2 ww^\ast = \underline{1} - 2 (-w)(-w)^\ast$. We therefore may choose $w$ such that its first component has a predictable sign (e.g. non-negative). Then, we only need to store the $n-1$ remaining components of $w$, and reconstruct the first one from the condition $w^\astw = 1$.
 
-In phase 1, each transformation zeros $ n-1 $ values in $A$. Hence, all zeros offer enough space to store all transformations of phase 1.
+In phase 1, each transformation zeros $n-1$ values in $A$. Hence, all zeros offer enough space to store all transformations of phase 1.
 
 One can also show that phase 2 always offers enough zero-space in $A$ to temporarily store all needed transformations.
 
@@ -313,13 +313,13 @@ Lets have a closer look into the left-sided atomic (n x n) householder transform
 
 **(1)**	$T \rightarrow HT$
 
-$T$ could be a partition in $A$, $ U^\ast $ or $ V^\ast $.
+$T$ could be a partition in $A$, $U^\ast$ or $V^\ast$.
 
-The transformation is defined by the n-vector $ w $:
+The transformation is defined by the n-vector $w$:
 
-**(2)**	 $ H_w(v) = \underline{1}-2w(w^\astv) $
+**(2)**	 $H_w(v) = \underline{1}-2w(w^\astv)$
 
-$ v $ would be a column vector in $T$.
+$v$ would be a column vector in $T$.
 
 If we denote an (i,j)-element in T as `t[i][j]`, the transformation **(1)**,**(2)** could naively be implemented as follows:
 
@@ -336,7 +336,7 @@ for( int j = 0; j < n; j++ )
 
 This implementation has two flaws: 
 
-* The inner loop passes through a column of T. This is inefficient in a row-major layout.
+* The inner loop passes through a column of $T$. This is inefficient in a row-major layout.
 * The first inner loop has no independent cycles. (Misses inner parallelity)
 
 We can fix both flaws by re-organizing  the algorithm as follows:
