@@ -25,7 +25,7 @@ Lets express matrix $M$ by a generic decomposition $U$, $A$, $V$ of which $U$, $
 
 **(1)** 	$M = UAV^\ast$
 
-A trivial decomposition would be: $U = V = \underline{1} $ and $A = M$.
+A trivial decomposition would be: $U = V = \underline{1}$ and $A = M$.
 
 The product of a unitary matrix with its adjunct $(P^\ast P)$ is the unity and the product of two unitary matrices is unitary. This is used to convert one decomposition into another:
 
