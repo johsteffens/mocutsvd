@@ -35,9 +35,9 @@ Equation (2) represents an incremental step.
 
 Most decomposition algorithms convert A incrementally via unitary transformations (UT) into a desired shape. The initial state is the trivial decomposition, then a suitable UT-sequence $ P_i $, $ Q_j $ is computed to convert $A$ into the desired shape. 
 
-The incremental conversions on $U$ and $V$ are called ***back-transformations***. Sometimes only one or even none is needed and the back transformations can be omitted accordingly.
+The incremental conversions on $U$ and $V$ are called ***back-transformations***. They can be omitted when $U$ or $V$ are not needed.
 
-Frequently needed decompositions are:
+Frequently used decompositions are:
 
 **QRD**: $A$ is upper triangular; $V$ remains unity; only $P_i$ are needed.
 
@@ -84,7 +84,7 @@ The HR can be configured to set $n-1$ values in a specific vector to zero. A str
 
 GR and HR both can be used to achieve the same goal. Asymptotically ($n \gg 1$) a Householder reflection requires 25% fewer numeric operations than a corresponding sequence of ($n-1$) givens rotations. Givens rotations are more localized and thus offer more flexibility in algorithm design.
 
-HR on a single vector has no natural [inner parallelity](true_scalability.md#inner-parallelity), however, it can be performed with inner parallelity on a level 2 matrix-operation. We will show later how it is done.
+HR on a single vector has no natural [inner parallelity](true_scalability.md#inner-parallelity), however, it can be performed with inner parallelity on a level 2 matrix-operation. We will show further down how it is done.
 
 ## The Golub-Reinsch SVD Approach
 

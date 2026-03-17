@@ -40,9 +40,8 @@ bin/
 # mocutsvd specific files
 mocutsvd_example*
 mocutsvd_test*
-# for the moment ignore all images and videos
-image/
-mocutsvd.html
+# for the moment ignore all videos
+*.webm
 
 # Debug files
 *.dSYM/
