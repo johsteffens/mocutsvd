@@ -16,7 +16,7 @@ Hardware-specific optimization or adaptation optimal efficiency is unpopular bec
 
 Platform agnosticism and hardware specific efficiency need no longer be a chasm of a contradiction.  It is bridged by a set of coding paradigms with which efficient, general purpose and future-proof code can be created.
 
-Intuitively, we relate the execution-time of an algorithm solving a numeric problem to $ \text{ numerical complexity } \over \text{ computational power } $. "*Computational power*" would be a function of : Number of CPU (-cores), CPU clock frequency, cache size & speed, RAM speed, etc. 
+Intuitively, we relate the execution-time of an algorithm solving a numeric problem to $\text{ numerical complexity } \over \text{ computational power }$. "*Computational power*" would be a function of : Number of CPU (-cores), CPU clock frequency, cache size & speed, RAM speed, etc. 
 
 Therefore, in this paper, I'd like to coin the term ***True-Scalable***, by describing five most important generic coding paradigms it involves. These are:
 
@@ -28,11 +28,11 @@ Therefore, in this paper, I'd like to coin the term ***True-Scalable***, by desc
 
 ## Baseline
 
-An algorithm shall be **true-scalable** when it is hardware-agnostic and its computation time is a linear function of  $ \text{ numerical complexity } \over \text{ computational power } $. 
+An algorithm shall be **true-scalable** when it is hardware-agnostic and its computation time is a linear function of  $\text{ numerical complexity } \over \text{ computational power }$. 
 
 I'll describe a set of important generic paradigms to achieve true scalability. I use the simple multiplication of two n x n matrices as baseline example to illustrate how each paradigm is employed. Note that this baseline is not to be understood as generic recipe for improving an arbitrary algorithm in general. It is intended to demonstrate what each paradigm actually aims at and how the algorithm need to be restructured in order to approach the goal.
 
-Let $ a, b, c $ be (n x n) matrices. $ c $ shall be initialized with zeros. We compute the matrix-matrix product $ c = ab $.
+Let $a, b, c$ be (n x n) matrices. $c$ shall be initialized with zeros. We compute the matrix-matrix product $c = ab$.
 
 <a id="example_1"></a>
 **Example 1:** Baseline algorithm (Standard Formula)
@@ -44,7 +44,7 @@ for( int i = 0; i < n; i++ )
             c[i][j] += a[i][k] * b[k][j];
 ```
 
-Although matrix-matrix multiplication has a numeric complexity of $O(n^3)$,  The time scalability of this textbook implementation is $O(n^x)$ with $x$ often significantly larger than $3$. The main reason is that the innermost loops access large sections and distant elements of memory. With small $ n $, the entire matrix fits in low level cache and the algorithm runs fast, as $ n $ rises, cache misses increase throughout all cache levels.
+Although matrix-matrix multiplication has a numeric complexity of $O(n^3)$,  The time scalability of this textbook implementation is $O(n^x)$ with $x$ often significantly larger than $3$. The main reason is that the innermost loops access large sections and distant elements of memory. With small $n$, the entire matrix fits in low level cache and the algorithm runs fast, as $n$ rises, cache misses increase throughout all cache levels.
 
 ## Data Layout
 
@@ -119,7 +119,7 @@ To mitigate the latency-problem, processors employ a layered memory structure: S
 
 Re-using cache and minimizing cache-RAM synchronizations is an important property of modern programs. The underlying design-criterion is called **[Data-Locality](https://en.wikipedia.org/wiki/Locality_of_reference)**. Its importance exceeds that of mere numerical efficiency. Since routines observing data locality can run hundreds of times faster than their inefficient counterparts, using more operations can be acceptable when the change yields a better data-locality.
 
-Example 3 is not data-local because for each of the $ n $ outer cycles, the entire matrix c is accessed and the accessed elements in one of the other matrices is spread out in memory  (in case of row-major layout, this would be $ a $). As $ n $ gets larger, the cache-efficiency is diminishing. Ultimately, the program will run extremely slow despite parallelism.
+Example 3 is not data-local because for each of the $n$ outer cycles, the entire matrix c is accessed and the accessed elements in one of the other matrices is spread out in memory  (in case of row-major layout, this would be $a$). As $n$ gets larger, the cache-efficiency is diminishing. Ultimately, the program will run extremely slow despite parallelism.
 
 The principal goal for achieving data-locality is to limit the computational effort to a small data-area as far as possible. In case of matrix-multiplication this is typically done via [block-partitioning](https://en.wikipedia.org/wiki/Block_matrix) and [divide and conquer](https://en.wikipedia.org/wiki/Matrix_multiplication_algorithm#Divide-and-conquer_algorithm). 
 
@@ -193,7 +193,7 @@ The table below demonstrates the baseline performance of all discussed paradigms
 | 4 (+ Data-Locality)     | 0.277             | 2.55              |
 | 5 (+ Alignment)         | 0.184             | 1.65              |
 
-The two values of n are chosen to be coprime to $ n_b $, to show the effect of alignment. Their ratio is chosen such that the numerical complexity is around 10: $(7173/3333)^3 \approx 10$, to make the timing values easier comparable.
+The two values of n are chosen to be coprime to $n_b$, to show the effect of alignment. Their ratio is chosen such that the numerical complexity is around 10: $(7173/3333)^3 \approx 10$, to make the timing values easier comparable.
 
 We can observe that the two data-local solutions show the best time-scaling behavior. The last two appear even slightly better than expected. The reason is that outer parallelity works better on larger matrices.
 
@@ -210,7 +210,7 @@ We can clearly observe the profound incremental effect on performance each parad
 
 #### Strassen Algorithm
 
-For sake of completeness, I point out that the [Strassen Algorithm](https://en.wikipedia.org/wiki/Strassen_algorithm) has better numerical complexity of $ O( n^{log_2 7}) $ than the standard matrix-matrix multiplication. However, it requires more memory and is more difficult to parallelize. Therefore, it does not lend itself as well to a true-scalable optimization as the standard algorithm.
+For sake of completeness, I point out that the [Strassen Algorithm](https://en.wikipedia.org/wiki/Strassen_algorithm) has better numerical complexity of $O( n^{log_2 7})$ than the standard matrix-matrix multiplication. However, it requires more memory and is more difficult to parallelize. Therefore, it does not lend itself as well to a true-scalable optimization as the standard algorithm.
 
 #### Other Computational Problems
 
