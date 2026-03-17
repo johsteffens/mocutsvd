@@ -568,7 +568,7 @@ static inline void grt_s_rotate( const grt_s* o, f3_t* a, f3_t* b )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/** We store the givens rotation without accuray loss in a single f3_t value using a variation of Stewart's approach 1976:
+/** We store the givens rotation without accuracy-loss in a single f3_t value using a variation of Stewart's approach 1976:
  *  Stewart, G.W.. "The Economical Storage of Plane Rotations.." Numerische Mathematik 25 (1975/76): 137-138
  */
 
