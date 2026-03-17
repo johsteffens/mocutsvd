@@ -289,19 +289,19 @@ The matrix `matrix-alloc` function chooses the `stride` value equal to or slight
 
 * **```int mocut_svd( mocut_mat_s* a, mocut_mat_s* u, mocut_mat_s* v );```**
 
-```mocut_svd``` performs the thin SVD on a (m x n)-Matrix: $M \rightarrow $ $ U^*, \Sigma, V^* $ .
+```mocut_svd``` performs the thin SVD on a (m x n)-Matrix: $M \rightarrow U^*, \Sigma, V^*$ .
 
-The matrices are being modified during execution. Matrix `a` must be initialized as $M$ before execution. After execution it is changed to $ \Sigma $ : The diagonal elements represents the singular values, all other elements are set to zero.
+The matrices are being modified during execution. Matrix `a` must be initialized as $M$ before execution. After execution it is changed to $\Sigma$ : The diagonal elements represents the singular values, all other elements are set to zero.
 
-Arguments `u`, `v` are optional. They represent $ U^* $ and $ V^* $ respectively containing the singular vectors as row vectors. If either is not needed, pass `NULL` as argument. 
+Arguments `u`, `v` are optional. They represent $U^*$ and $V^*$ respectively containing the singular vectors as row vectors. If either is not needed, pass `NULL` as argument. 
 
-If $ U^* $ or $ V^* $ is needed, you can pass either an empty instance, or you can pass a pre-sized matrix (via `matrix-alloc` or `matrix-setup`). 
+If $U^*$ or $V^*$ is needed, you can pass either an empty instance, or you can pass a pre-sized matrix (via `matrix-alloc` or `matrix-setup`). 
 
 If it is empty, `mocut_svd` will allocate it to the correct size. If it is non-empty, the size must be `(k x m)` for `u` and `(k x n)` for `v` with `k = min(m,n)`.
 
 **Convergence:**
 
-The final phase of the SVD algorithm cannot be expressed in a closed form. Instead an iterative process is needed that converges to the correct result. The algorithm is designed such that this convergence is fast, stable and almost always guaranteed. Only on a very exotic matrix $ M $ might convergence be impaired. For this very rare case, SVD returns the warning `MOCUT_WRN_CONVERGENCE`. It indicates that the reconstruction  $ U \cdot \Sigma \cdot V^* $ might deviate numerically from $ M $.
+The final phase of the SVD algorithm cannot be expressed in a closed form. Instead an iterative process is needed that converges to the correct result. The algorithm is designed such that this convergence is fast, stable and almost always guaranteed. Only on a very exotic matrix $M$ might convergence be impaired. For this very rare case, SVD returns the warning `MOCUT_WRN_CONVERGENCE`. It indicates that the reconstruction  $U \cdot \Sigma \cdot V^*$ might deviate numerically from $M$.
 
 **Return Value:**
 
