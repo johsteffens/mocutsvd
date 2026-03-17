@@ -339,7 +339,7 @@ In the example below, the memory manager [TBMAN](https://github.com/johsteffens/
 #include "mocutsvd.h"
 ```
 
-### No Memory Management
+### Custom Memory Management
 
 If you wish to prevent MOCUT SVD from using any memory management, define `MOCUT_NO_MEM_ALLOC` before including `mocutsvd.h`.
 
@@ -348,7 +348,7 @@ If you wish to prevent MOCUT SVD from using any memory management, define `MOCUT
 #include "mocutsvd.h"
 ```
 
-Do not use functions `mocut_mat_s_create`, `mocut_mat_s_discard`, `mocut_mat_s_alloc`.
+In this case you cannot use functions `mocut_mat_s_create`, `mocut_mat_s_discard`, `mocut_mat_s_alloc`.
 
 Instead, place the matrix instance on the stack and use functions `mocut_mat_s_init`, `mocut_mat_down`, `mocut_mat_setup`.
 
@@ -362,11 +362,11 @@ mocut_mat_s_setup( &a, rows, cols, stride, data ); // assigning an external matr
 mocut_mat_s_down( &a ); // instance a is cleaned up
 ```
 
-**Note:** Without memory management, you might need to take care of proper alignment of the assigned memory area.
+**Note:** Without memory management, [alignment](doc/true_scalability.md#data-alignment) of the assigned memory area is in your hands. The alignment used can affect processing speed.
 
 ### Custom Data Alignment
 
-MOCUTSVD aligns matrix data to improve on inner parallelity and cache usage for most processors. If you wish to experiment with your own custom alignment, define MOCUT_VAL_ALIGN with a constant indicating the alignment in bytes before including `mucutsvd.h`:
+MOCUTSVD [aligns](doc/true_scalability.md#data-alignment) matrix data to improve on inner parallelity and cache usage for most processors. If you wish to experiment with your own custom alignment, define MOCUT_VAL_ALIGN with a constant indicating the alignment in bytes before including `mucutsvd.h`:
 
 ``` C
 #define MOCUT_VAL_ALIGN 32 // aligns matrix rows to multiple of 32 double values (32*8 bytes)

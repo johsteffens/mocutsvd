@@ -23,7 +23,7 @@ In this paper, I first cover how SVD is commonly approached, then describe the M
 
 Lets express matrix $ M $ by a generic decomposition $ U $, $ A $, $ V $ of which $ U $, $ V $ are unitary. For the moment $ A $ can be any matrix. 
 
-**(1)** 	$M = UAV^*$
+**(1)** 	$M = UAV^\ast$
 
 A trivial decomposition would be: $ U = V = \underline{1} $ and $ A = M $.
 
@@ -68,15 +68,15 @@ A single Givens Rotation can be used to set one value in A to zero. With a strat
 
 The [Householder Reflection](https://en.wikipedia.org/wiki/Householder_transformation) (HR) is a self-adjoint unitary transformation determined by a normalized vector $ w $ and expressed in matrix-form as follows:
 
-$ w^*w = 1 $
+$ w^\astw = 1 $
 
-$ H_w = \underline{1} - 2 ww^* $ 
+$ H_w = \underline{1} - 2 ww^\ast $ 
 
 $ H_w $ is unitary because
 
-$ H_w^*H_w = H_wH^*_w = (\underline{1} - 2 ww^*)(\underline{1} - 2 ww^*) = \underline{1} - 4ww^* + 4ww^*ww^* = \underline{1} $
+$ H_w^\astH_w = H_wH^\ast_w = (\underline{1} - 2 ww^\ast)(\underline{1} - 2 ww^\ast) = \underline{1} - 4ww^\ast + 4ww^\astww^\ast = \underline{1} $
 
-The HR is numerically efficient because $ H_w(v) = \underline{1}-2w(w^*v) $, which has a complexity of $ O(n) $, ($ n = dim( v ) $). 
+The HR is numerically efficient because $ H_w(v) = \underline{1}-2w(w^\astv) $, which has a complexity of $ O(n) $, ($ n = dim( v ) $). 
 
 The left-side reflection $H \cdot A$ affects $ n $ rows in A. The right-side reflection $A \cdot H$ affects $ n $ columns in A. 
 
@@ -109,7 +109,7 @@ Phase 1 zeros alternatingly the leftmost non-zero column under the main-diagonal
 * Blue: Already zeroed values.
 
 
-$ P_i $ and $ Q_i $ are tightly coupled: To determine $ P_i $, the $ i $-th column of $ (A_{i-1}Q^*_{i-1}) $ must be known. To determine $ Q_i $, the $ i $-th row of  $ (P_i A_{i-1}) $ must be known. Consequently all of the residual not yet bi-diagonalized portion of A must be accessed before the next UT can be computed. This thwarts data-locality an severely limits [outer-parallelity](true_scalability.md#outer-parallelity) because the outermost loop is fairly long and not independent.
+$ P_i $ and $ Q_i $ are tightly coupled: To determine $ P_i $, the $ i $-th column of $ (A_{i-1}Q^\ast_{i-1}) $ must be known. To determine $ Q_i $, the $ i $-th row of  $ (P_i A_{i-1}) $ must be known. Consequently all of the residual not yet bi-diagonalized portion of A must be accessed before the next UT can be computed. This thwarts data-locality an severely limits [outer-parallelity](true_scalability.md#outer-parallelity) because the outermost loop is fairly long and not independent.
 
 Hence, phase 1 in the Golub-Reinsch Algorithm is not [true-scalable](#true_scalable).
 
@@ -175,15 +175,15 @@ Let's assume we have a set of accrued unitary transformations.
 
 $ P = \prod_i P_i $
 
-$ Q^* = \prod_j Q^*_j $
+$ Q^\ast = \prod_j Q^\ast_j $
 
 $U$ and $ V $ shall be stored in their (conjugate) transposed form. Then matrices will be updated as follows
 
-$ A \rightarrow \left( \left( P A \right) Q^* \right)$
+$ A \rightarrow \left( \left( P A \right) Q^\ast \right)$
 
-$ U^* \rightarrow P U^* $
+$ U^\ast \rightarrow P U^\ast $
 
-$ V^* \rightarrow Q V^* $
+$ V^\ast \rightarrow Q V^\ast $
 
 In this setting, we are facing mostly left-sided atomic transformations, so we focus on analyzing this form and generalize where appropriate.
 
@@ -277,7 +277,7 @@ These form the same monoclinic patterns as described in phase 1. Therefore, we c
 
 ### Phase 3
 
-Phase 3 of MOCUT SVD is based on bi-diagonal to diagonal phase by the Golub-Reinsch approach [2] [12]. The operations on $ A $ yield a sequence of adjacent Givens rotations for the back-transformation on $ U^* $ and $ V^* $: These rotations operate on a contiguous partition in multiple cycles. Each cycle process rows in that partition from top to bottom. Each single rotation affects two adjacent rows. Two subsequent rotations within a cycle affect two subsequent pairs of rows, which overlap by one row. 
+Phase 3 of MOCUT SVD is based on bi-diagonal to diagonal phase by the Golub-Reinsch approach [2] [12]. The operations on $ A $ yield a sequence of adjacent Givens rotations for the back-transformation on $ U^\ast $ and $ V^\ast $: These rotations operate on a contiguous partition in multiple cycles. Each cycle process rows in that partition from top to bottom. Each single rotation affects two adjacent rows. Two subsequent rotations within a cycle affect two subsequent pairs of rows, which overlap by one row. 
 
 Within a cycle, we combine a set of maximally $ n $ subsequent givens rotations to form an atomic unitary transformation, which affects $n+1$ rows. Two subsequent atomic transformations within a cycle overlap by one row. This transformation pattern is the same as in phase 1 except that we use Givens rotations instead of Householder reflections and the direction of preocessing rows is reversed. We can therefore apply the same reasoning to construct a permutation that forms data-local blocks of accrued transformations. Because subsequent atomic transformations overlap by one row, these blocks assume a monoclinic shape in the same manner as already described in [phase 1](#phase-1). 
 
@@ -285,9 +285,9 @@ Within a cycle, we combine a set of maximally $ n $ subsequent givens rotations 
 
 (See also [True Scalability: Outer parallelity](true_scalability.md#outer-parallelity))
 
-For left-sided transformation $PA$, $PU^*$, $QV^*$ we can partition the operand into multiple blocks of columns. The transformation is independent across blocks and can therefore run in parallel (e.g. one thread per block). For left sided operations ($AQ^*$) the same reasoning applies by partitioning the operand into blocks of rows.
+For left-sided transformation $PA$, $PU^\ast$, $QV^\ast$ we can partition the operand into multiple blocks of columns. The transformation is independent across blocks and can therefore run in parallel (e.g. one thread per block). For left sided operations ($AQ^\ast$) the same reasoning applies by partitioning the operand into blocks of rows.
 
-For optimal efficiency, as many transformations as possible should be accrued before splitting the processing into independent threads. For transformations on $A$, outer-parallelization is only required (and feasible) for phase 1. Back transformations on $ U^* $ and $ V^* $ can be done in parallel in all three phases.
+For optimal efficiency, as many transformations as possible should be accrued before splitting the processing into independent threads. For transformations on $A$, outer-parallelization is only required (and feasible) for phase 1. Back transformations on $ U^\ast $ and $ V^\ast $ can be done in parallel in all three phases.
 
 ### Temporary Storage of atomic Transformations
 
@@ -295,7 +295,7 @@ For optimal outer parallelity many atomic transformation should be collected bef
 
 The Householder reflection is defined by its $ n $-dimensional vector $ w $. 
 
-The transformation is invariant to negating $ w $: $ H_w = \underline{1} - 2 ww^* = \underline{1} - 2 (-w)(-w)^*$. We therefore may choose $ w $ such that its first component has a predictable sign (e.g. non-negative). Then, we only need to store the $ n-1 $ remaining components of $ w $, and reconstruct the first one from the condition $w^*w = 1$.
+The transformation is invariant to negating $ w $: $ H_w = \underline{1} - 2 ww^\ast = \underline{1} - 2 (-w)(-w)^\ast$. We therefore may choose $ w $ such that its first component has a predictable sign (e.g. non-negative). Then, we only need to store the $ n-1 $ remaining components of $ w $, and reconstruct the first one from the condition $w^\astw = 1$.
 
 In phase 1, each transformation zeros $ n-1 $ values in $A$. Hence, all zeros offer enough space to store all transformations of phase 1.
 
@@ -313,11 +313,11 @@ Lets have a closer look into the left-sided atomic (n x n) householder transform
 
 **(1)**	$T \rightarrow HT$
 
-$T$ could be a partition in $A$, $ U^* $ or $ V^* $.
+$T$ could be a partition in $A$, $ U^\ast $ or $ V^\ast $.
 
 The transformation is defined by the n-vector $ w $:
 
-**(2)**	 $ H_w(v) = \underline{1}-2w(w^*v) $
+**(2)**	 $ H_w(v) = \underline{1}-2w(w^\astv) $
 
 $ v $ would be a column vector in $T$.
 
