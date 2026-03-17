@@ -68,15 +68,15 @@ A single Givens Rotation can be used to set one value in A to zero. With a strat
 
 The [Householder Reflection](https://en.wikipedia.org/wiki/Householder_transformation) (HR) is a self-adjoint unitary transformation determined by a normalized vector $w$ and expressed in matrix-form as follows:
 
-$w^\astw = 1$
+$w^\ast w = 1$
 
 $H_w = \underline{1} - 2 ww^\ast$ 
 
 $H_w$ is unitary because
 
-$H_w^\astH_w = H_wH^\ast_w = (\underline{1} - 2 ww^\ast)(\underline{1} - 2 ww^\ast) = \underline{1} - 4ww^\ast + 4ww^\astww^\ast = \underline{1}$
+$H_w^\ast H_w = H_w H_w^\ast = (\underline{1} - 2 ww^\ast )( \underline{1} - 2 ww^\ast ) = \underline{1} - 4w w^\ast + 4w w^\ast w w^\ast = \underline{1} $
 
-The HR is numerically efficient because $H_w(v) = \underline{1}-2w(w^\astv)$, which has a complexity of $O(n)$, ($n = dim( v )$). 
+The HR is numerically efficient because $H_w(v) = \underline{1}-2w(w^\ast v)$, which has a complexity of $O(n)$, ($n = dim( v )$). 
 
 The left-side reflection $H \cdot A$ affects $n$ rows in A. The right-side reflection $A \cdot H$ affects $n$ columns in $A$. 
 
@@ -109,7 +109,7 @@ Phase 1 zeros alternatingly the leftmost non-zero column under the main-diagonal
 * Blue: Already zeroed values.
 
 
-$P_i$ and $Q_i$ are tightly coupled: To determine $P_i$, the $i$-th column of $(A_{i-1}Q^\ast_{i-1})$ must be known. To determine $Q_i$, the $i$-th row of  $(P_i A_{i-1})$ must be known. Consequently all of the residual not yet bi-diagonalized portion of A must be accessed before the next UT can be computed. This thwarts data-locality an severely limits [outer-parallelity](true_scalability.md#outer-parallelity) because the outermost loop is fairly long and not independent.
+$P_i$ and $Q_i$ are tightly coupled: To determine $P_i$, the $i$-th column of $(A_{i-1}Q_{i-1}^\ast)$ must be known. To determine $Q_i$, the $i$-th row of  $(P_i A_{i-1})$ must be known. Consequently all of the residual not yet bi-diagonalized portion of A must be accessed before the next UT can be computed. This thwarts data-locality an severely limits [outer-parallelity](true_scalability.md#outer-parallelity) because the outermost loop is fairly long and not independent.
 
 Hence, phase 1 in the Golub-Reinsch Algorithm is not [true-scalable](#true_scalable).
 
@@ -175,7 +175,7 @@ Let's assume we have a set of accrued unitary transformations.
 
 $P = \prod_i P_i$
 
-$Q^\ast = \prod_j Q^\ast_j$
+$Q^\ast = \prod_j Q_j^\ast$
 
 $U$ and $V$ shall be stored in their (conjugate) transposed form. Then matrices will be updated as follows
 
@@ -295,7 +295,7 @@ For optimal outer parallelity many atomic transformation should be collected bef
 
 The Householder reflection is defined by its $n$-dimensional vector $w$. 
 
-The transformation is invariant to negating $w$: $H_w = \underline{1} - 2 ww^\ast = \underline{1} - 2 (-w)(-w)^\ast$. We therefore may choose $w$ such that its first component has a predictable sign (e.g. non-negative). Then, we only need to store the $n-1$ remaining components of $w$, and reconstruct the first one from the condition $w^\astw = 1$.
+The transformation is invariant to negating $w$: $H_w = \underline{1} - 2 ww^\ast = \underline{1} - 2 (-w)(-w)^\ast$. We therefore may choose $w$ such that its first component has a predictable sign (e.g. non-negative). Then, we only need to store the $n-1$ remaining components of $w$, and reconstruct the first one from the condition $w^\ast w = 1$.
 
 In phase 1, each transformation zeros $n-1$ values in $A$. Hence, all zeros offer enough space to store all transformations of phase 1.
 
@@ -317,7 +317,7 @@ $T$ could be a partition in $A$, $U^\ast$ or $V^\ast$.
 
 The transformation is defined by the n-vector $w$:
 
-**(2)**	 $H_w(v) = \underline{1}-2w(w^\astv)$
+**(2)**	 $H_w(v) = \underline{1}-2w(w^\ast v)$
 
 $v$ would be a column vector in $T$.
 
