@@ -149,141 +149,79 @@ The matrix `matrix-alloc` function chooses the `stride` value equal to or slight
 #### Matrix-Functions
 
 *  **```mocut_mat_s* mocut_mat_s_create( void );```**
-  * Constructs an empty instance. For destruction, see ```mocut_mat_s_discard```.
+   * Constructs an empty instance. For destruction, see ```mocut_mat_s_discard```.
   
-  * **Return:** 
+   * **Return:** 
+      * Pointer to constructed matrix.
+      * NULL in case matrix could not be constructed.
     
-    * Pointer to constructed matrix.
-    
-    * NULL in case matrix could not be constructed.
-    
-      
-  
 * **```void mocut_mat_s_discard( mocut_mat_s* );```**
-  
-  * Destructs a matrix. Frees all memory this matrix owns. For construction, see ```mocut_mat_s_create```.
+   * Destructs a matrix. Frees all memory this matrix owns. For construction, see ```mocut_mat_s_create```.
   
 *  **```void mocut_mat_s_init( mocut_mat_s*  );```**
-  * Initializes an empty matrix instance that was created on the stack.
-  * To tear it down, call `mocut_mat_s_down`.
-  * Do not use this function when you create on dynamic memory it via `mocut_mat_s_create`.
+   * Initializes an empty matrix instance that was created on the stack.
+   * To tear it down, call `mocut_mat_s_down`.
+   * Do not use this function when you create on dynamic memory it via `mocut_mat_s_create`.
   
 * **```void mocut_mat_s_down( mocut_mat_s* );```**
-  * Tears down a matrix that was initialized by `mocut_mat_s_init`. 
-  * Do not use this function when you created it on dynamic memory it via `mocut_mat_s_create`.
+   * Tears down a matrix that was initialized by `mocut_mat_s_init`. 
+   * Do not use this function when you created it on dynamic memory it via `mocut_mat_s_create`.
 
 * **```int mocut_mat_s_alloc( mocut_mat_s* o, size_t rows, size_t cols );```**
-
-  * Allocates a (rows x cols )-matrix and initializes all values to zero.
-  
-  * This function takes care of proper data-alignment for optimal SVD-performance.
-  
-  * **Return:** 
+   * Allocates a (rows x cols )-matrix and initializes all values to zero.
+   * This function takes care of proper data-alignment for optimal SVD-performance.
+   * **Return:** 
+      * `0`: Success    
+      * `>0`: Error Code (Allocation failed).
     
-    * `0`: Success
-    
-    * `>0`: Error Code (Allocation failed).
-    
-      
-
 * **```int mocut_mat_s_set( mocut_mat_s* o, size_t row, size_t col, double value );```**
-
-    * Sets element value at position `[row][col]`.
-
-    * **Return:** 
-      
+   * Sets element value at position `[row][col]`.
+   * **Return:**       
       * `0`: Success
-
       * `>0`: Error (Index out of rage).
-      
-        
-
 
 * **```double mocut_mat_s_get( const mocut_mat_s* o, size_t row, size_t col );```**
-  
-  * Returns element value at position `[row][col]`. If `row` or `col` is out of range, `0` is returned.
-  
-    
-  
+   * Returns element value at position `[row][col]`. If `row` or `col` is out of range, `0` is returned.
+     
 * **```double* mocut_mat_s_ptr( const mocut_mat_s* o, size_t row, size_t col );```**
-
-  * Returns a pointer to element value at position `[row][col]` for fast, compiler-optimizable read or write access. 
-  * Same as: ```o->data[ i * o->stride + j ]```
-  * **Note:** This function has no boundary check for `row`, `col`!
-
-
+   * Returns a pointer to element value at position `[row][col]` for fast, compiler-optimizable read or write access. 
+   * Same as: ```o->data[ i * o->stride + j ]```
+   * **Note:** This function has no boundary check for `row`, `col`!
 
 * **```void mocut_mat_s_clear( mocut_mat_s* o );```**
-
-  * Clears memory from the latest allocation without destroying the matrix.
-
-    
-
+   * Clears memory from the latest allocation without destroying the matrix.
+     
 * **```int mocut_mat_s_setup( mocut_mat_s* o, size_t rows, size_t cols, size_t stride, double* data )```**
+   * Makes the matrix use external data. The external matrix layout must be compatible to the `mocut` layout. The external matrix data is neither copied nor owned by `mocut_mat_s`. It will not be freed on matrix destruction. The external data must stay alive and valid during the lifetime of the `mocut_mat_s` instance.
+   * The purpose of this function is to simplify the integration of `mocutsvd` into a codebase that prefers using its own matrix representation.
+   * **Note:** Using `mocut_mat_s_setup` with unaligned external data is allowed but can limit the effectiveness of cache and vectorization in function `mocut_svd`.
+   * **Return:** 
+      * `0`: Success
+      * `>0`: Error Code.
 
-  * Makes the matrix use external data. The external matrix layout must be compatible to the `mocut` layout. The external matrix data is neither copied nor owned by `mocut_mat_s`. It will not be freed on matrix destruction. The external data must stay alive and valid during the lifetime of the `mocut_mat_s` instance.
-
-  * The purpose of this function is to simplify the integration of `mocutsvd` into a codebase that prefers using its own matrix representation.
-
-  * **Note:** Using `mocut_mat_s_setup` with unaligned external data is allowed but can limit the effectiveness of cache and vectorization in function `mocut_svd`.
-
-    **Return:** 
-
-    * `0`: Success
-
-    * `>0`: Error Code.
-
-      
-
-* **```mocut_mat_s* mocut_mat_s_create_alloc( size_t rows, size_t cols )```**
-  
-  * Convenience combination of `mocut_mat_s_create` and `mocut_mat_s_alloc`. Returns NULL in case of error.
-  
-    
+* **```mocut_mat_s* mocut_mat_s_create_alloc( size_t rows, size_t cols )```**  
+   * Convenience combination of `mocut_mat_s_create` and `mocut_mat_s_alloc`. Returns NULL in case of error.
   
 * **```mocut_mat_s* mocut_mat_s_create_setup( size_t rows, size_t cols, size_t stride, double* data )```**
+   * Convenience combination of `mocut_mat_s_create` and `mocut_mat_s_setup`. Returns NULL in case of error.
   
-  * Convenience combination of `mocut_mat_s_create` and `mocut_mat_s_setup`. Returns NULL in case of error.
-  
-    
-
-
 * **```mocut_mat_s* mocut_mat_s_create_setup( size_t rows, size_t cols, size_t stride, double* data )```**
-  
-  * Convenience combination of `mocut_mat_s_create` and `mocut_mat_s_setup`. Returns NULL in case of error.
-  
-    
+   * Convenience combination of `mocut_mat_s_create` and `mocut_mat_s_setup`. Returns NULL in case of error.
 
-
-* **```int mocut_mat_s_copy( mocut_mat_s* o, const mocut_mat_s* m )```**
-  
-  * Copies the matrix data from `m` to `o`. 
-  
-  * Both matrices must be allocated to the same size: `(o.rows==m.rows) && (o.cols==m.cols)`
-    **Return:** 
-    
-    * `0`: Success
-    
-    * `>0`: Error Code.
-    
-      
+* **```int mocut_mat_s_copy( mocut_mat_s* o, const mocut_mat_s* m )```**  
+   * Copies the matrix data from `m` to `o`. 
+   * Both matrices must be allocated to the same size: `(o.rows==m.rows) && (o.cols==m.cols)`
+   * **Return:** 
+      * `0`: Success
+      * `>0`: Error Code.
   
 * **```int mocut_mat_s_copy_transposed( mocut_mat_s* o, const mocut_mat_s* m )```**
-  
-  * Copies the transposed matrix data from `m` to `o`. 
-  
-  * Both matrices must be allocated to the respective transposed size: `(o.rows==m.cols) && (o.cols==m.rows)`
-    
-  * In case of a square matrix `(rows == cols)`, `o` and `m` may reference the same matrix: In-place transposition.
-    
-  * **Return:** 
-    
-    * `0`: Success
-    
-    * `>0`: Error Code.
-    
-      
-
+   * Copies the transposed matrix data from `m` to `o`. 
+   * Both matrices must be allocated to the respective transposed size: `(o.rows==m.cols) && (o.cols==m.rows)`
+   * In case of a square matrix `(rows == cols)`, `o` and `m` may reference the same matrix: In-place transposition.
+   * **Return:** 
+      * `0`: Success
+      * `>0`: Error Code.
 
 ### SVD-Function
 
