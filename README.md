@@ -146,7 +146,7 @@ The matrix is represented by structure ```mocut_mat_s```, which contains the fol
 
 The matrix uses a 'strided row-major' data-layout. This means that the element ```[i][j]``` is accessed as ```data[ i * stride + j ]```;  $i \in \{ 0, ..., \text{rows}-1 \},  j \in \{ 0, ..., \text{cols}-1 \}$.
 
-The matrix `matrix-alloc` function chooses the `stride` value equal to or slightly above `cols` such that the beginning of rows are aligned to specific memory addresses optimal for caching and inner parallelity. The user may also setup a matrix manually, referencing external data via `matrix-setup` function.
+The stride value is set automatically for optimal alignment during matrix-allocation. The user may also setup a matrix manually, referencing external data via `matrix-setup` function.
 
 #### Matrix-Functions
 
@@ -163,11 +163,11 @@ The matrix `matrix-alloc` function chooses the `stride` value equal to or slight
 *  **```void mocut_mat_s_init( mocut_mat_s*  );```**
    * Initializes an empty matrix instance that was created on the stack.
    * To tear it down, call `mocut_mat_s_down`.
-   * Do not use this function when you create on dynamic memory it via `mocut_mat_s_create`.
+   * Do not use this function when you create a matrix via `mocut_mat_s_create`.
   
 * **```void mocut_mat_s_down( mocut_mat_s* );```**
    * Tears down a matrix that was initialized by `mocut_mat_s_init`. 
-   * Do not use this function when you created it on dynamic memory it via `mocut_mat_s_create`.
+   * Do not use this function when the matrix was created via `mocut_mat_s_create`.
 
 * **```int mocut_mat_s_alloc( mocut_mat_s* o, size_t rows, size_t cols );```**
    * Allocates a (rows x cols )-matrix and initializes all values to zero.
@@ -202,13 +202,13 @@ The matrix `matrix-alloc` function chooses the `stride` value equal to or slight
       * `>0`: Error Code.
 
 * **```mocut_mat_s* mocut_mat_s_create_alloc( size_t rows, size_t cols )```**  
-   * Convenience combination of `mocut_mat_s_create` and `mocut_mat_s_alloc`. Returns NULL in case of error.
+   * Convenience function: Combination of `mocut_mat_s_create` and `mocut_mat_s_alloc`. Returns NULL in case of error.
   
 * **```mocut_mat_s* mocut_mat_s_create_setup( size_t rows, size_t cols, size_t stride, double* data )```**
-   * Convenience combination of `mocut_mat_s_create` and `mocut_mat_s_setup`. Returns NULL in case of error.
+   * Convenience function: Combination of `mocut_mat_s_create` and `mocut_mat_s_setup`. Returns NULL in case of error.
   
 * **```mocut_mat_s* mocut_mat_s_create_setup( size_t rows, size_t cols, size_t stride, double* data )```**
-   * Convenience combination of `mocut_mat_s_create` and `mocut_mat_s_setup`. Returns NULL in case of error.
+   * Convenience function: Combination of `mocut_mat_s_create` and `mocut_mat_s_setup`. Returns NULL in case of error.
 
 * **```int mocut_mat_s_copy( mocut_mat_s* o, const mocut_mat_s* m )```**  
    * Copies the matrix data from `m` to `o`. 
@@ -231,9 +231,9 @@ The matrix `matrix-alloc` function chooses the `stride` value equal to or slight
 
 ```mocut_svd``` performs the thin SVD on a (m x n)-Matrix: $M \rightarrow U^\ast, \Sigma, V^\ast$ .
 
-The matrices are being modified during execution. Matrix `a` must be initialized as $M$ before execution. After execution it is changed to $\Sigma$ : The diagonal elements represents the singular values, all other elements are set to zero.
+The matrices are being modified during execution. Matrix `a` must be initialized as $M$ before execution. After execution it represents $\Sigma$ : The diagonal elements represents the singular values, all other elements are set to zero.
 
-Arguments `u`, `v` are optional. They represent $U^\ast$ and $V^\ast$ respectively containing the singular vectors as row vectors. If either is not needed, pass `NULL` as argument. 
+Arguments `u`, `v` are optional. They represent $U^\ast$ and $V^\ast$ respectively containing the singular vectors as row vectors. Pass `NULL` as argument when not needed.
 
 If $U^\ast$ or $V^\ast$ is needed, you can pass either an empty instance, or you can pass a pre-sized matrix (via `matrix-alloc` or `matrix-setup`). 
 
@@ -251,7 +251,7 @@ The final phase of the SVD is an iterative process that converges to the correct
 
 ## Thread Safety
 
-MocUT-functions are thread-safe, provided the data passed as argument is not shared across thread boundaries while the function is running.
+MocUT-functions are thread-safe, provided the data passed as argument is not shared with other threads while the function is running.
 
 Although `mocut_svd` may spawn its own threads, those are completely shielded from any multi-threaded environment you might be using in your application.
 
@@ -259,7 +259,7 @@ Although `mocut_svd` may spawn its own threads, those are completely shielded fr
 ## Memory and Data Alignment
 MocUT SVD offers some customization around memory handling.
 
-Function `mocut_svd` does not allocate or free any memory; instead it uses the memory space provided by the matrices. The matrix uses a memory management back-end only for allocation and destruction. Per default it uses `stdlib` functions `aligned_alloc` and `free`. Alternatively, you can declare your custom memory functions or supply external memory to a matrix via function `mocut_mat_s_setup`. You can also control memory alignment.
+Function `mocut_svd` uses only the memory space provided by the matrices. Per default the matrix interface uses `stdlib` functions `aligned_alloc` and `free` for allocation and destruction. Alternatively, you can declare your custom memory functions or supply external memory to a matrix via function `mocut_mat_s_setup`. You can also control memory alignment.
 
 This opens possibilities for platforms with limited or non-standard memory management:
 
@@ -281,7 +281,7 @@ In the example below, the memory manager [TBMAN](https://github.com/johsteffens/
 
 ### Custom Memory Management
 
-If you wish to prevent MocUT SVD from using any memory management, define `MOCUT_NO_MEM_ALLOC` before including `mocutsvd.h`.
+If you wish to prevent MocUT SVD from using any memory management at all, define `MOCUT_NO_MEM_ALLOC` before including `mocutsvd.h`.
 
 ``` C
 #define MOCUT_NO_MEM_ALLOC
@@ -302,7 +302,7 @@ mocut_mat_s_setup( &a, rows, cols, stride, data ); // assigning an external matr
 mocut_mat_s_down( &a ); // instance a is cleaned up
 ```
 
-**Note:** Without memory management, [alignment](doc/true_scalability.md#data-alignment) of the assigned memory area is in your hands. The alignment used can affect processing speed.
+**Note:** Without memory management, [alignment](doc/true_scalability.md#data-alignment) is your responsibility.
 
 ### Custom Data Alignment
 
@@ -328,7 +328,7 @@ By default MocUT SVD spawns multiple threads according to the number of logical 
 * If you wish more specific thread controls, look up the Open MP documentation: [https://www.openmp.org](https://www.openmp.org)
 
 #### High CPU Load
-On very large matrices, the function `mocut_svd` will put prolonged load on the CPU, running it near its rated power limits. Correctly configured machines should well handle this type of load. Some platforms permit overriding safety limits at the users own risk (e.g. via overclocking, overvolting). Be aware that inadequately configured safety measures might cause malfunction or damage under high CPU load.
+On very large matrices, the function `mocut_svd` will put prolonged load on the CPU, running it near its rated power limits. Correctly configured machines can handle this type of load. Some platforms permit overriding safety limits at the users own risk (e.g. via overclocking, overvolting). Be aware that inadequately configured safety measures might cause malfunction or damage under high CPU load.
 
 #### Valgrind
 Advanced debugging tools like `valgrind` analyze the instructions and memory usage of a program:
