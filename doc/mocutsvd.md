@@ -385,19 +385,34 @@ For this solution I also added enhanced stability and enhanced numeric accuracy 
 
 ## Performance
 
+The performance was tested on different platforms, each containing the following steps
 
+* Initialize an ($n$ x $n$) matrix $M$ with random values.
+* Run the SVD $M \rightarrow U^\ast, \Sigma, V^\ast$ and measure the absolute time required.
+* Verify the correctness of the result.
 
+Tested was the implementation in `mocutsvd.c` and  `mocutsvd.h`. The code was compiled using `gcc` with flags `-fopenmp -march=native -O3`.
 
+The following CPUs were used:
+* `TR 7960`: AMD Ryzen™ Threadripper™ 7960X, containing 24 cores
+* `RZ 5900`: AMD Ryzen™ 9 5900X, containing 12 cores
+* `i7 7700`: Intel® Core™ i7-7700, containing 4 cores
+
+The chart below shows the absolution computation time across different values of $n$.
+
+![](image/duration_tests.png)
+
+**Figure 8:** Absolute processing time in seconds for a full decomposition of a ($n$ x  $n$) matrix: $M \rightarrow U^\ast, \Sigma, V^\ast$. The charts represent 3 different CPUs.
 
 ## Conclusion and Outlook
 
-We presented a new platform-agnostic algorithm for general purpose singular value decomposition. The methods used are designed to stay portable with likely future developments in computing hardware.
+We presented a new platform-agnostic algorithm for general purpose singular value decomposition. The methods used are designed to remain portable in consideration of likely future developments in computing hardware.
 
 Even though the implementation does not need hardware specific code, with a standard optimizing compiler an impressive performance can be achieved. 
 
 We have not explicitly used SIMD instructions in our code. While the compiler might utilize SIMD instructions during optimizations, there are indications that more recent instruction sets (e.g. AVX-512) offer yet untapped territory for further improvements.
 
-We have not investigated the [DC-SVD](#the-dc-approach) in conjunction with the monoclinic transformation pattern. In this filed, further improvements might also be possible.
+We have not investigated the [DC-SVD. Combining the MocUT approach with DC-SVD might yield further improvements.
 
 ## External References
 
@@ -414,10 +429,6 @@ https://en.wikipedia.org/wiki/Givens_rotation
 https://en.wikipedia.org/wiki/Monoclinic_crystal_system
 
 https://github.com/johsteffens/mocutsvd
-
-https://libeigen.gitlab.io/
-
-https://arma.sourceforge.net/
 
 ## Literature
 

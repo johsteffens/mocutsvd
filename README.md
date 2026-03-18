@@ -6,7 +6,7 @@ Singular Value Decomposition is the method of finding the three components $U, \
 
 MocUT SVD is an efficient, easy-to-use and highly portable stand-alone-implementation for C or C++ programs. This SVD solution was completely redesigned from scratch. It contains several improvements compared to traditional implementations and is specially optimized for modern CPU architectures.
 
-## Essentials in a Nutshell
+## All in a Nutshell
 
 You only need the two files `mocutsvd.h` and `mocutsvd.c`. 
 
@@ -108,9 +108,11 @@ ___________________________________
 
 MocUT SVD is an algorithm for singular value decomposition, completely redesigned from scratch.  Given a matrix $M$, it calculates the matrices $U^\ast, \Sigma, V^\ast$ such that  $M = U \cdot \Sigma \cdot V^\ast$ .  It bases on the Golub-Kahan-Reinsch approach and inherits its proven stability. However, it deviates from traditional methods in many performance-critical aspects.
 
+#### About the Name
+
 **MocUT** is a shortcut for a special kind of recurring unitary transformation pattern I designed for this SVD solution. More details can be found in the whitepaper: [MocUT SVD: Singular Value Decomposition via Monoclinic Unitary Transformations](doc/mocutsvd.md).
 
-**Platform Support**
+#### Platform Support
 
 MocUT SVD is adapted to optimally utilize typical components in modern CPU architectures, such as: Multiple-cores, multi-layered caching, intrinsic vectorization (inner paralelity) and hyper-threading.
 
@@ -118,7 +120,8 @@ At the same time the code maintains high portability: It only requires complianc
 
 This level of portability is achieved by utilizing coding paradigms that allow the compiler to apply platform specific optimizations. Outer parallelity is achieved via [Open MP](https://en.wikipedia.org/wiki/OpenMP).
 
-**Note:** 
+#### Transposed $U$, $V$
+
 MocUT SVD generates the matrices of singular vectors in their transposed form: $U^\ast$, $V^\ast$, where singular vectors are row-vectors. If desired, you can convert the matrix back to the traditional form via function ```mocut_mat_s_copy_transposed```.
 
 ### Error Handling
@@ -237,11 +240,11 @@ If $U^\ast$ or $V^\ast$ is needed, you can pass either an empty instance, or you
 
 If it is empty, `mocut_svd` will allocate it to the correct size. If it is non-empty, the size must be `(k x m)` for `u` and `(k x n)` for `v` with `k = min(m,n)`.
 
-**Convergence:**
+#### Convergence
 
 The final phase of the SVD is an iterative process that converges to the correct result. In the rare case of non-convrgence, SVD returns the warning `MOCUT_WRN_CONVERGENCE`. It indicates that the reconstruction  $U \cdot \Sigma \cdot V^\ast$ might deviate numerically from $M$.
 
-**Return Value:**
+#### Return Value
 
 * `0`: Success
 * MOCUT_WRN_CONVERGENCE: Insufficient convergence
@@ -338,4 +341,13 @@ Advanced debugging tools like `valgrind` analyze the instructions and memory usa
 To analyze code with `valgrind`, disable above compiler flags.
 
 ## Performance
+
+![](doc/image/duration_tests.png)
+
+Absolute processing time in seconds for a full decomposition of a ($n$ x  $n$) matrix: $M \rightarrow U^\ast, \Sigma, V^\ast$. The charts represent 3 different CPUs.
+
+The following CPUs were used:
+* `TR 7960`: AMD Ryzen™ Threadripper™ 7960X, containing 24 cores
+* `RZ 5900`: AMD Ryzen™ 9 5900X, containing 12 cores
+* `i7 7700`: Intel® Core™ i7-7700, containing 4 cores
 
