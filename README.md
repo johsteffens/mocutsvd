@@ -105,7 +105,7 @@ ___________________________________
 
 ## Detailed Description
 
-MocUT SVD is an algorithm for singular value decomposition, completely redesigned from scratch.  Given a matrix $M$, it calculates the matrices $U^\ast, \Sigma, V^\ast$ such that  $M = U \cdot \Sigma \cdot V^\ast$ .  It bases on the Golub-Kahan-Reinsch approach and inherits its proven stability. However, it deviates from traditional methods in many performance-critical aspects.
+MocUT SVD is an algorithm for singular value decomposition.  Given a matrix $M$, it calculates the matrices $U^\ast, \Sigma, V^\ast$ such that  $M = U \cdot \Sigma \cdot V^\ast$ .  It is based on the Golub-Kahan-Reinsch approach and inherits its proven stability. It is newly developed with many performance-critical improvements.
 
 #### About the Name
 
@@ -113,11 +113,11 @@ MocUT SVD is an algorithm for singular value decomposition, completely redesigne
 
 #### Platform Support
 
-MocUT SVD is adapted to optimally utilize typical components in modern CPU architectures, such as: Multiple-cores, multi-layered caching, intrinsic vectorization (inner paralelity) and hyper-threading.
+MocUT SVD is adapted to optimally utilize modern CPU architectures. Specifically: Multiple-cores, multi-layered caching, intrinsic vectorization (inner paralelity) and hyper-threading.
 
-At the same time the code maintains high portability: It only requires compliance to the C11 (or later) standard. Hence the code is usable without adaptation with most of todays compiler-tool-chains, operating systems and platforms.
+At the same time the code maintains high portability: It only requires compliance to the C11 (or later) standard. Hence, the code is compilable by todays compiler-tool-chains for most operating systems and platforms.
 
-This level of portability is achieved by utilizing coding paradigms that allow the compiler to apply platform specific optimizations. Outer parallelity is achieved via [Open MP](https://en.wikipedia.org/wiki/OpenMP).
+Portability is achieved by utilizing generic coding paradigms that help the compiler applying platform specific optimizations. Outer parallelity is achieved via [Open MP](https://en.wikipedia.org/wiki/OpenMP).
 
 #### Transposed $U$, $V$
 
@@ -144,7 +144,7 @@ The matrix is represented by structure ```mocut_mat_s```, which contains the fol
 * ```size_t stride``` : Number of elements between the start of two successive rows. It is ```stride >= cols```.
 * ```double* data```: Location of matrix data in memory.
 
-The data-layout is 'strided row-major'. This means that the element ```[i][j]``` is accessed as ```data[ i * stride + j ]```;  $i \in \{ 0, ..., \text{rows}-1 \},  j \in \{ 0, ..., \text{cols}-1 \}$.
+The matrix uses a 'strided row-major' data-layout. This means that the element ```[i][j]``` is accessed as ```data[ i * stride + j ]```;  $i \in \{ 0, ..., \text{rows}-1 \},  j \in \{ 0, ..., \text{cols}-1 \}$.
 
 The matrix `matrix-alloc` function chooses the `stride` value equal to or slightly above `cols` such that the beginning of rows are aligned to specific memory addresses optimal for caching and inner parallelity. The user may also setup a matrix manually, referencing external data via `matrix-setup` function.
 
