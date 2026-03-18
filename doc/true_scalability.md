@@ -230,7 +230,31 @@ The baseline algorithm, used here, is rather simple. More complex numerical task
 
 ## Web References
 
-TODO
+https://en.wikipedia.org/wiki/Big_O_notation
+
+https://en.wikipedia.org/wiki/Locality_of_reference
+
+https://en.wikipedia.org/wiki/Parallel_algorithm
+
+https://www.openmp.org/
+
+https://en.wikipedia.org/wiki/Row-_and_column-major_order
+
+https://en.wikipedia.org/wiki/Stride_of_an_array
+
+https://en.wikipedia.org/wiki/Dynamic_random-access_memory
+
+https://en.wikipedia.org/wiki/Burst_mode_(computing)
+
+https://en.wikipedia.org/wiki/Directive_(programming)
+
+https://en.wikipedia.org/wiki/Block_matrix
+
+https://en.wikipedia.org/wiki/Matrix_multiplication_algorithm#Divide-and-conquer_algorithm
+
+https://en.cppreference.com/w/c/memory/aligned_alloc
+
+https://en.wikipedia.org/wiki/Strassen_algorithm
 
 ## Literature
 

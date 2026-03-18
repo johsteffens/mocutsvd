@@ -6,7 +6,7 @@ Singular Value Decomposition is the method of finding the three components $U, \
 
 MocUT SVD is an efficient, easy-to-use and highly portable stand-alone-implementation for C or C++ programs. This SVD solution was completely redesigned from scratch. It contains several improvements compared to traditional implementations and is specially optimized for modern CPU architectures.
 
-## All in a Nutshell
+## In a Nutshell
 
 You only need the two files `mocutsvd.h` and `mocutsvd.c`. 
 
@@ -79,7 +79,7 @@ $ ./mocutsvd_example 5 10
 
 ### Evaluation Application
 
-[`test.c`](test.c) can be used for performance testing on larger matrices. It creates a random matrix, decomposes it with time measurement, reconstructs the original form the decomposed factors and computes the RMS-error of the reconstruction:
+[`test.c`](test.c) can be used for performance testing on larger matrices. It creates a random matrix, decomposes it with a time measurement, reconstructs the original form the decomposed factors and computes the RMS-error of the reconstruction:
 
 ```bash
 $ make mocutsvd_test
@@ -110,13 +110,13 @@ MocUT SVD is an algorithm for singular value decomposition, completely redesigne
 
 #### About the Name
 
-**MocUT** is a shortcut for a special kind of recurring unitary transformation pattern I designed for this SVD solution. More details can be found in the whitepaper: [MocUT SVD: Singular Value Decomposition via Monoclinic Unitary Transformations](doc/mocutsvd.md).
+**MocUT** is a shortcut for Monoclinic Unitary Transformation, which is a special kind of recurring transformation pattern I designed for this SVD solution. More details can be found in the whitepaper: [MocUT SVD: Singular Value Decomposition via Monoclinic Unitary Transformations](doc/mocutsvd.md).
 
 #### Platform Support
 
 MocUT SVD is adapted to optimally utilize typical components in modern CPU architectures, such as: Multiple-cores, multi-layered caching, intrinsic vectorization (inner paralelity) and hyper-threading.
 
-At the same time the code maintains high portability: It only requires compliance to the C11 (or later) standard. Hence the code should be usable without adaptation with far most of todays compiler-tool-chains, operating systems and platforms.
+At the same time the code maintains high portability: It only requires compliance to the C11 (or later) standard. Hence the code is usable without adaptation with most of todays compiler-tool-chains, operating systems and platforms.
 
 This level of portability is achieved by utilizing coding paradigms that allow the compiler to apply platform specific optimizations. Outer parallelity is achieved via [Open MP](https://en.wikipedia.org/wiki/OpenMP).
 
@@ -329,7 +329,7 @@ By default MocUT SVD spawns multiple threads according to the number of logical 
 * If you wish more specific thread controls, look up the Open MP documentation: [https://www.openmp.org](https://www.openmp.org)
 
 #### High CPU Load
-On very large matrices, the function `mocut_svd` will put prolonged load on the CPU, running it close to its rated power limits. Correctly configured machines should handle this type of load. Some platforms permit to override safety limits at the users own risk (e.g. overclocking, overvolting). Be aware that inadequately configured safety measures might cause malfunction or damage.
+On very large matrices, the function `mocut_svd` will put prolonged load on the CPU, running it near its rated power limits. Correctly configured machines should well handle this type of load. Some platforms permit overriding safety limits at the users own risk (e.g. via overclocking, overvolting). Be aware that inadequately configured safety measures might cause malfunction or damage under high CPU load.
 
 #### Valgrind
 Advanced debugging tools like `valgrind` analyze the instructions and memory usage of a program:
@@ -338,7 +338,7 @@ Advanced debugging tools like `valgrind` analyze the instructions and memory usa
 
 * Valgrind might not be compatible to a compilers integration of OpenMP  (`-fopenmp`).
 
-To analyze code with `valgrind`, disable above compiler flags.
+To analyze code with `valgrind`, do not use these compiler flags.
 
 ## Performance
 
