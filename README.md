@@ -1,10 +1,10 @@
-# MOCUT SVD - Singular Value Decomposition
+# MocUT SVD - Singular Value Decomposition
 
 ## What it is
 
 Singular Value Decomposition is the method of finding the three components $U, \Sigma, V$ to an arbitrary (m x n) matrix $M$, which satisfy the equation $M = U \cdot \Sigma \cdot V^\ast$ . Where $\Sigma$ is a diagonal matrix containing singular values and $U$, $V$ are unitary matrices containing left and right singular vectors. The SVD algorithm is of critical importance in science and engineering.
 
-MOCUT SVD is an efficient, easy-to-use and highly portable stand-alone-implementation for C or C++ programs. This SVD solution was completely redesigned from scratch. It contains several improvements compared to traditional implementations and is specially optimized for modern CPU architectures.
+MocUT SVD is an efficient, easy-to-use and highly portable stand-alone-implementation for C or C++ programs. This SVD solution was completely redesigned from scratch. It contains several improvements compared to traditional implementations and is specially optimized for modern CPU architectures.
 
 ## Essentials in a Nutshell
 
@@ -93,7 +93,7 @@ $ ./mocutsvd_test 10000 10000
 
 ### Benefits
 
-* **Stable**: MOCUT SVD has same or better convergence stability as the widely used Golub-Kahan-Reinsch SVD approach.
+* **Stable**: MocUT SVD has same or better convergence stability as the widely used Golub-Kahan-Reinsch SVD approach.
 * **True-Scalable**: Fast and efficient computation for small up to very large matrices.
 * **Parallel**: Time-critical computation has (inner and outer) parallelity. By default all available CPU-cores and CPU-threads are used.
 * **Memory Efficient**: Operates within the matrix-provided memory space and allocates no extra heap memory.
@@ -106,20 +106,20 @@ ___________________________________
 
 ## Detailed Description
 
-MOCUT SVD is an algorithm for singular value decomposition, completely redesigned from scratch.  Given a matrix $M$, it calculates the matrices $U^\ast, \Sigma, V^\ast$ such that  $M = U \cdot \Sigma \cdot V^\ast$ .  It bases on the Golub-Kahan-Reinsch approach and inherits its proven stability. However, it deviates from traditional methods in many performance-critical aspects.
+MocUT SVD is an algorithm for singular value decomposition, completely redesigned from scratch.  Given a matrix $M$, it calculates the matrices $U^\ast, \Sigma, V^\ast$ such that  $M = U \cdot \Sigma \cdot V^\ast$ .  It bases on the Golub-Kahan-Reinsch approach and inherits its proven stability. However, it deviates from traditional methods in many performance-critical aspects.
 
-**MOCUT** is a shortcut for a special kind of recurring unitary transformation pattern I designed for this SVD solution. More details can be found in the whitepaper: [MOCUT SVD: Singular Value Decomposition via Monoclinic Unitary Transformations](doc/mocutsvd.md).
+**MocUT** is a shortcut for a special kind of recurring unitary transformation pattern I designed for this SVD solution. More details can be found in the whitepaper: [MocUT SVD: Singular Value Decomposition via Monoclinic Unitary Transformations](doc/mocutsvd.md).
 
 **Platform Support**
 
-MOCUT SVD is adapted to optimally utilize typical components in modern CPU architectures, such as: Multiple-cores, multi-layered caching, intrinsic vectorization (inner paralelity) and hyper-threading.
+MocUT SVD is adapted to optimally utilize typical components in modern CPU architectures, such as: Multiple-cores, multi-layered caching, intrinsic vectorization (inner paralelity) and hyper-threading.
 
 At the same time the code maintains high portability: It only requires compliance to the C11 (or later) standard. Hence the code should be usable without adaptation with far most of todays compiler-tool-chains, operating systems and platforms.
 
 This level of portability is achieved by utilizing coding paradigms that allow the compiler to apply platform specific optimizations. Outer parallelity is achieved via [Open MP](https://en.wikipedia.org/wiki/OpenMP).
 
 **Note:** 
-MOCUT SVD generates the matrices of singular vectors in their transposed form: $U^\ast$, $V^\ast$, where singular vectors are row-vectors. If desired, you can convert the matrix back to the traditional form via function ```mocut_mat_s_copy_transposed```.
+MocUT SVD generates the matrices of singular vectors in their transposed form: $U^\ast$, $V^\ast$, where singular vectors are row-vectors. If desired, you can convert the matrix back to the traditional form via function ```mocut_mat_s_copy_transposed```.
 
 ### Error Handling
 
@@ -150,11 +150,11 @@ The matrix `matrix-alloc` function chooses the `stride` value equal to or slight
 
 *  **```mocut_mat_s* mocut_mat_s_create( void );```**
    * Constructs an empty instance. For destruction, see ```mocut_mat_s_discard```.
-  
+   
    * **Return:** 
       * Pointer to constructed matrix.
       * NULL in case matrix could not be constructed.
-    
+   
 * **```void mocut_mat_s_discard( mocut_mat_s* );```**
    * Destructs a matrix. Frees all memory this matrix owns. For construction, see ```mocut_mat_s_create```.
   
@@ -173,7 +173,7 @@ The matrix `matrix-alloc` function chooses the `stride` value equal to or slight
    * **Return:** 
       * `0`: Success    
       * `>0`: Error Code (Allocation failed).
-    
+   
 * **```int mocut_mat_s_set( mocut_mat_s* o, size_t row, size_t col, double value );```**
    * Sets element value at position `[row][col]`.
    * **Return:**       
@@ -182,7 +182,7 @@ The matrix `matrix-alloc` function chooses the `stride` value equal to or slight
 
 * **```double mocut_mat_s_get( const mocut_mat_s* o, size_t row, size_t col );```**
    * Returns element value at position `[row][col]`. If `row` or `col` is out of range, `0` is returned.
-     
+   
 * **```double* mocut_mat_s_ptr( const mocut_mat_s* o, size_t row, size_t col );```**
    * Returns a pointer to element value at position `[row][col]` for fast, compiler-optimizable read or write access. 
    * Same as: ```o->data[ i * o->stride + j ]```
@@ -190,7 +190,7 @@ The matrix `matrix-alloc` function chooses the `stride` value equal to or slight
 
 * **```void mocut_mat_s_clear( mocut_mat_s* o );```**
    * Clears memory from the latest allocation without destroying the matrix.
-     
+   
 * **```int mocut_mat_s_setup( mocut_mat_s* o, size_t rows, size_t cols, size_t stride, double* data )```**
    * Makes the matrix use external data. The external matrix layout must be compatible to the `mocut` layout. The external matrix data is neither copied nor owned by `mocut_mat_s`. It will not be freed on matrix destruction. The external data must stay alive and valid during the lifetime of the `mocut_mat_s` instance.
    * The purpose of this function is to simplify the integration of `mocutsvd` into a codebase that prefers using its own matrix representation.
@@ -239,7 +239,7 @@ If it is empty, `mocut_svd` will allocate it to the correct size. If it is non-e
 
 **Convergence:**
 
-The final phase of the SVD algorithm cannot be expressed in a closed form. Instead an iterative process is needed that converges to the correct result. The algorithm is designed such that this convergence is fast, stable and almost always guaranteed. Only on a very exotic matrix $M$ might convergence be impaired. For this very rare case, SVD returns the warning `MOCUT_WRN_CONVERGENCE`. It indicates that the reconstruction  $U \cdot \Sigma \cdot V^\ast$ might deviate numerically from $M$.
+The final phase of the SVD is an iterative process that converges to the correct result. In the rare case of non-convrgence, SVD returns the warning `MOCUT_WRN_CONVERGENCE`. It indicates that the reconstruction  $U \cdot \Sigma \cdot V^\ast$ might deviate numerically from $M$.
 
 **Return Value:**
 
@@ -249,13 +249,13 @@ The final phase of the SVD algorithm cannot be expressed in a closed form. Inste
 
 ## Thread Safety
 
-MOCUT-functions are thread-safe, provided the data passed as argument is not shared across thread boundaries while the function is running.
+MocUT-functions are thread-safe, provided the data passed as argument is not shared across thread boundaries while the function is running.
 
 Although `mocut_svd` may spawn its own threads, those are completely shielded from any multi-threaded environment you might be using in your application.
 
 
 ## Memory and Data Alignment
-MOCUT SVD offers some customization around memory handling.
+MocUT SVD offers some customization around memory handling.
 
 Function `mocut_svd` does not allocate or free any memory; instead it uses the memory space provided by the matrices. The matrix uses a memory management back-end only for allocation and destruction. Per default it uses `stdlib` functions `aligned_alloc` and `free`. Alternatively, you can declare your custom memory functions or supply external memory to a matrix via function `mocut_mat_s_setup`. You can also control memory alignment.
 
@@ -279,7 +279,7 @@ In the example below, the memory manager [TBMAN](https://github.com/johsteffens/
 
 ### Custom Memory Management
 
-If you wish to prevent MOCUT SVD from using any memory management, define `MOCUT_NO_MEM_ALLOC` before including `mocutsvd.h`.
+If you wish to prevent MocUT SVD from using any memory management, define `MOCUT_NO_MEM_ALLOC` before including `mocutsvd.h`.
 
 ``` C
 #define MOCUT_NO_MEM_ALLOC
@@ -304,7 +304,7 @@ mocut_mat_s_down( &a ); // instance a is cleaned up
 
 ### Custom Data Alignment
 
-MOCUTSVD [aligns](doc/true_scalability.md#data-alignment) matrix data to improve on inner parallelity and cache usage for most processors. If you wish to experiment with your own custom alignment, define MOCUT_VAL_ALIGN with a constant indicating the alignment in bytes before including `mucutsvd.h`:
+MocUT SVD [aligns](doc/true_scalability.md#data-alignment) matrix data to improve on inner parallelity and cache usage for most processors. If you wish to experiment with your own custom alignment, define MOCUT_VAL_ALIGN with a constant indicating the alignment in bytes before including `mucutsvd.h`:
 
 ``` C
 #define MOCUT_VAL_ALIGN 32 // aligns matrix rows to multiple of 32 double values (32*8 bytes)
@@ -312,29 +312,23 @@ MOCUTSVD [aligns](doc/true_scalability.md#data-alignment) matrix data to improve
 
 ## Side Effects and Remedies
 
-### Threads, Open MP
-By default MOCUT SVD spawns multiple threads according to the number of logical CPUs on the platform. 
+#### Threads, Open MP
+By default MocUT SVD spawns multiple threads according to the number of logical CPUs on the platform. 
 
 * If you wish to run it only in the caller thread, avoid using the flag `-fopenmp` with compiler and linker. 
 
-* If you want to prevent MOCUT SVD using OpenMP at all, comment out the compiler directives
+* If you want to prevent MocUT SVD using OpenMP at all, comment out the compiler directives
 
 ​	```#pragma omp parallel for```
 
 ​	in ```mocutsvd.h``` and ```mocutsvd.c```
 
-* If you wish more specific control, look up the Open MP documentation: [https://www.openmp.org](https://www.openmp.org)
+* If you wish more specific thread controls, look up the Open MP documentation: [https://www.openmp.org](https://www.openmp.org)
 
-### High CPU Load
-On very large matrices, the function `mocut_svd` will put significant prolonged load on the CPU, possibly running it near its rated limits. 
+#### High CPU Load
+On very large matrices, the function `mocut_svd` will put prolonged load on the CPU, running it close to its rated power limits. Correctly configured machines should handle this type of load. Some platforms permit to override safety limits at the users own risk (e.g. overclocking, overvolting). Be aware that inadequately configured safety measures might cause malfunction or damage.
 
-Normally, machines are designed to handle this type of load for an indefinite time.
-
-However, if the platform was setup to override safety measures (e.g. via overclocking) or has inadequate cooling, safety limits can be exceeded which might cause malfunction and in extreme cases even damage to the CPU or other hardware components.
-
-Make sure the CPU is adequately cooled and all safety measures are active.
-
-### Valgrind
+#### Valgrind
 Advanced debugging tools like `valgrind` analyze the instructions and memory usage of a program:
 
 * Valgrind might not recognize newer native CPU instructions, which occur with certain native compiler optimizations (such as `-march=native` ).

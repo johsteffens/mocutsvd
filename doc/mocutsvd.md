@@ -1,11 +1,9 @@
 
-# MOCUT SVD: Singular Value Decomposition via Monoclinic Unitary Transformations
+# MocUT SVD: Singular Value Decomposition via Monoclinic Unitary Transformations
 
 **Johannes B. Steffens**
 
 #### Technical Whitepaper, March 2026
-
-
 
 ## Introduction
 
@@ -15,9 +13,9 @@ The SVD decomposes a *m x n* Matrix *M* into Matrices $U$, $\Sigma$ , $V$ such t
 
 A SVD exists for any matrix. Designing a fast and numerically stable SVD algorithm, however, offers challenges.
 
-I investigating different platform-agnostic ways to achieve  [True Scalability](true_scalability.md) [1] in SVD and in the process developed a general purpose and highly portable SVD solution. I discovered an oblique pattern of unitary transformations, which can be used in all phases of the decomposition. I will use the term *Monoclinic Unitary Transformation* (MOCUT) to describe this approach. MOCUT SVD offers a performance edge over other contemporary SVD algorithms on general purpose multi-core CPUs.
+I investigating different platform-agnostic ways to achieve  [True Scalability](true_scalability.md) [1] in SVD and in the process developed a general purpose and highly portable SVD solution. I discovered an oblique pattern of unitary transformations, which can be used in all phases of the decomposition. I will use the term *Monoclinic Unitary Transformation* (MocUT) to describe this approach. MocUT SVD offers a performance edge over other contemporary SVD algorithms on general purpose multi-core CPUs.
 
-In this paper, I first cover how SVD is commonly approached, then describe the MOCUT algorithm in detail and conclude with a performance comparison to SVD algorithms in publicly available linear-algebra libraries.
+In this paper, I first cover how SVD is commonly approached, then describe the MocUT algorithm in detail and conclude with a performance comparison to SVD algorithms in publicly available linear-algebra libraries.
 
 ## Matrix Decomposition
 
@@ -123,7 +121,7 @@ Describing the full chasing algorithm goes beyond the scope of this document. At
 
 For sake of completeness, we briefly mention that for diagonalizing a bi-diagonal matrix, a stable and efficient divide an conquer approach has been developed by Ming Gu et al. [10]. The DC-approach differs significantly from the Golub-Reinsch GR-chasing. The DC-Approach appears to run faster at similar stability. It has been adopted by popular SVD software libraries. 
 
-However, we did not utilize the DC-Idea in MOCUT-SVD.
+However, we did not utilize the DC-Idea in MocUT-SVD.
 
 ## The 3-Phase Band-Diagonal SVD Approach
 
@@ -165,9 +163,9 @@ The back-transformation on $U,V$, on the other hand, has approximately the same 
 
 His work spawned efforts on adapting the 3-phase solution to more specialized hardware such as the GPU, e.g. M. Gates et al. [11].
 
-## The MOCUT Algorithm
+## The MocUT Algorithm
 
-The MOCUT SVD is a 3-phase algorithm. Its distinction from the previously discussed 3-phase approach is its usage of accrued unitary transformations. It does not attempt use the WY-Representation, is not dependent on any BLAS-library and it is designed for general purpose CPUs rather than specialized hardware. It achieves its performance advantage by chopping up the sequence of transformation into a set of suitable *"atomic"* transformations, and then finding a permutation with improved [data-locality](true_scalability.md#data-locality)
+The MocUT SVD is a 3-phase algorithm. Its distinction from the previously discussed 3-phase approach is its usage of accrued unitary transformations. It does not attempt use the WY-Representation, is not dependent on any BLAS-library and it is designed for general purpose CPUs rather than specialized hardware. It achieves its performance advantage by chopping up the sequence of transformation into a set of suitable *"atomic"* transformations, and then finding a permutation with improved [data-locality](true_scalability.md#data-locality)
 
 To describe this approach, we begin with the observation that for all time-critical operations, we can use a set of accrued unitary transformations: In Phase 1, this applies to matrices $A$, $U$ and $V$. In Phases 2 and 3, only back-transformations on $U$ and $V$ are relevant: Residual computational effort on band-diagonal $A$ is negligible in comparison.
 
@@ -224,7 +222,7 @@ Condition **(5)** requires $P_{i+1,j}$ and $P_{i,j + 1}$ to be commutative. Sinc
 
 ![](image/band_sub_a/vis_000001.png)![](image/band_sub_a/vis_000002.png)![](image/band_sub_a/vis_000003.png)![](image/band_sub_a/vis_000004.png) **...**
 
-**Figure 5:** Left-sided operation during band-diagonalization. The re-bundled atomic transformations form a local block with an oblique pattern. We call it ***<u>Mo</u>no<u>c</u>linic <u>U</u>nitary <u>T</u>ransformation*** (MOCUT).
+**Figure 5:** Left-sided operation during band-diagonalization. The re-bundled atomic transformations form a local block with an oblique pattern. We call it ***<u>Mo</u>no<u>c</u>linic <u>U</u>nitary <u>T</u>ransformation*** (MocUT).
 
 We can easily see that each atomic transformation within a block reuses most of the rows such that the modified matrix data is more condensed and thus offers high cache-efficiency. 
 
@@ -277,7 +275,7 @@ These form the same monoclinic patterns as described in phase 1. Therefore, we c
 
 ### Phase 3
 
-Phase 3 of MOCUT SVD is based on bi-diagonal to diagonal phase by the Golub-Reinsch approach [2] [12]. The operations on $A$ yield a sequence of adjacent Givens rotations for the back-transformation on $U^\ast$ and $V^\ast$: These rotations operate on a contiguous partition in multiple cycles. Each cycle process rows in that partition from top to bottom. Each single rotation affects two adjacent rows. Two subsequent rotations within a cycle affect two subsequent pairs of rows, which overlap by one row. 
+Phase 3 of MocUT SVD is based on bi-diagonal to diagonal phase by the Golub-Reinsch approach [2] [12]. The operations on $A$ yield a sequence of adjacent Givens rotations for the back-transformation on $U^\ast$ and $V^\ast$: These rotations operate on a contiguous partition in multiple cycles. Each cycle process rows in that partition from top to bottom. Each single rotation affects two adjacent rows. Two subsequent rotations within a cycle affect two subsequent pairs of rows, which overlap by one row. 
 
 Within a cycle, we combine a set of maximally $n$ subsequent givens rotations to form an atomic unitary transformation, which affects $n+1$ rows. Two subsequent atomic transformations within a cycle overlap by one row. This transformation pattern is the same as in phase 1 except that we use Givens rotations instead of Householder reflections and the direction of preocessing rows is reversed. We can therefore apply the same reasoning to construct a permutation that forms data-local blocks of accrued transformations. Because subsequent atomic transformations overlap by one row, these blocks assume a monoclinic shape in the same manner as already described in [phase 1](#phase-1). 
 
@@ -379,23 +377,27 @@ for( int i = 0; i < m-1; i++ )
 
 ## GitHub Solution
 
-MOCUT SVD is publicly available on a github repository under the following link: https://github.com/johsteffens/mocutsvd
+MocUT SVD is publicly available on a github repository under the following link: https://github.com/johsteffens/mocutsvd
 
-[mocutsvd](https://github.com/johsteffens/mocutsvd) was designed to be easily usable in an application or to be integrable in a linear-algebra library. I added a permissive license in the hope that it receives widespread adoption. 
+For this solution I also added enhanced stability and enhanced numeric accuracy by various techniques not covered in this document.
+
+[mocutsvd](https://github.com/johsteffens/mocutsvd) was designed to be easily usable in an application or to be added to a linear-algebra library. I used a permissive royalty-free license in the hope that it receives adoption.
 
 ## Performance
 
-TODO: add charts
+
 
 
 
 ## Conclusion and Outlook
 
-We presented a new platform-agnostic algorithm for general purpose singular value decomposition. The methods used are designed to stay portable with likely future developments in computing hardware. Even though the implementation solely relies on standard compiler optimizations, an impressive performance can be achieved in comparison to other publicly available solutions. 
+We presented a new platform-agnostic algorithm for general purpose singular value decomposition. The methods used are designed to stay portable with likely future developments in computing hardware.
+
+Even though the implementation does not need hardware specific code, with a standard optimizing compiler an impressive performance can be achieved. 
 
 We have not explicitly used SIMD instructions in our code. While the compiler might utilize SIMD instructions during optimizations, there are indications that more recent instruction sets (e.g. AVX-512) offer yet untapped territory for further improvements.
 
-We have not investigated the [DC-SVD](#the-dc-approach) in conjunction with the monoclinic transformation pattern. In the best performing third party libraries ([Eigen](https://libeigen.gitlab.io/), [Armadillo](https://arma.sourceforge.net/)) DC-SVD appears to be preferable over GR-SVD. Hence, there might be potential for further improvements.
+We have not investigated the [DC-SVD](#the-dc-approach) in conjunction with the monoclinic transformation pattern. In this filed, further improvements might also be possible.
 
 ## External References
 
