@@ -4,7 +4,7 @@
 
 Singular Value Decomposition is the method of finding the three components $U, \Sigma, V$ to an arbitrary (m x n) matrix $M$, which satisfy the equation $M = U \cdot \Sigma \cdot V^\ast$ . Where $\Sigma$ is a diagonal matrix containing singular values and $U$, $V$ are unitary matrices containing left and right singular vectors. The SVD algorithm is of critical importance in science and engineering.
 
-MocUT SVD is an efficient, easy-to-use and highly portable stand-alone-implementation for C or C++ programs. This SVD solution was completely redesigned from scratch. It contains several improvements compared to traditional implementations and is specially optimized for modern CPU architectures.
+MocUT SVD is an efficient, easy-to-use and highly portable stand-alone-implementation for C or C++ programs. It was completely redesigned from scratch and contains several improvements compared to traditional implementations. It is specially optimized for modern CPU architectures.
 
 ## In a Nutshell
 
@@ -22,7 +22,7 @@ Include `mocutsvd.h` in your program (C or C++ code) and compile `mocutsvd.c` am
 // Creates (20 x 10)-matrix A
 mocut_mat_s* a = mocut_mat_s_create_alloc( 20, 10 );
 
-// We fill matrix A with data ...
+// Fills matrix A with data ...
 for( size_t i = 0; i < a->rows; i++ )
 	for( size_t j = 0; j < a->cols; j++ )
 		mocut_mat_s_set( a, i, j, /* your value at position [i][j] */  );
@@ -30,13 +30,12 @@ for( size_t i = 0; i < a->rows; i++ )
 mocut_mat_s* u = mocut_mat_s_create(); // Matrix U*
 mocut_mat_s* v = mocut_mat_s_create(); // Matrix V*
 
-// This runs the svd: A -> U*, Σ, V*
-// Computing singular vectors is optional; use argument NULL where not needed
+// SVD: A -> U*, Σ, V*; computing singular vectors U*, V* is optional; pass NULL where not needed.
 mocut_svd( a, u, v ); 
 
 // At this point: 
-//  - a represents Σ. The diagonal elements of a contain singular values in descending order.
-//  - u, v, represent the matrices U*, V*:
+//  - 'a' represents Σ. The diagonal elements of 'a' contain singular values in descending order.
+//  - 'u', 'v', represent the matrices U*, V*:
 //       - U*: (10 x 20); its row vectors represent the left singular vectors
 //       - V*: (10 x 10); its row vectors represent the right singular vectors
 
@@ -55,8 +54,8 @@ mocut_mat_s_discard( v );
 
 #### Build
 
-* Compile with following compiler and/or linker flags or use compatible flags of your favorite compiler-tool-chain.  Going forward, I'll use `gcc`.
-* Compiler/Linker Flags:
+* Compile with gcc and flags below or use compatible flags of your preferred compiler-tool-chain.
+* Compiler/Linker Flags (gcc):
   * Required: `-lm`. 
   * Recommended for general optimization: `-O3`
   * Recommended for advanced CPU specific optimization: `-march=native`. 
@@ -84,10 +83,10 @@ $ ./mocutsvd_example 5 10
 ```bash
 $ make mocutsvd_test
 
-$ # run without arguments to get all options:
+$ # running without arguments outputs all options:
 $ ./mocutsvd_test 
 
-$ # run a test on a 10000 x 10000 matrix:
+$ # runs a test on a 10000 x 10000 matrix:
 $ ./mocutsvd_test 10000 10000 
 ```
 
@@ -95,10 +94,10 @@ $ ./mocutsvd_test 10000 10000
 
 * **Stable**: MocUT SVD has same or better convergence stability as the widely used Golub-Kahan-Reinsch SVD approach.
 * **True-Scalable**: Fast and efficient computation for small up to very large matrices.
-* **Parallel**: Time-critical computation has (inner and outer) parallelity. By default all available CPU-cores and CPU-threads are used.
+* **Parallel**: With (inner and outer) parallelity. By default all available CPU-cores and CPU-threads are used.
 * **Memory Efficient**: Operates within the matrix-provided memory space and allocates no extra heap memory.
-* **Alignment**: The Matrix ABI takes care of optimal data alignment.
-* **Portable:** Overall platform-agnostic design.
+* **Alignment**: The Matrix Interface takes care of optimal data alignment.
+* **Portable:** Platform-agnostic design.
 
 ___________________________________
 
