@@ -158,7 +158,7 @@ The operations temporarily introduce off-band non-zeros in A, which will be chas
 
 The back-transformation on $U,V$, on the other hand, has approximately the same complexity as band-diagonalization. Therefore, this part should be done with careful optimization.  B. Lang [9] showed that the back-transformations can be rearranged in a cache-efficient manner and he suggests using the WY-representation for accrued left and right HR.
 
-Subsequent work focused on adapting the 3-phase solution using the BLAS framework on specialized hardware such as the GPU, e.g. M. Gates et al. [11].
+Subsequent work focused on adapting the 3-phase solution using the BLAS framework on specialized or heterogenous hardware [11], [14].
 
 ## The MocUT Algorithm
 
@@ -238,7 +238,7 @@ The figure below depicts the entire phase 1 operation:
 
 #### Non Square Matrices
 
-We should point out that  all row and column operations described here are size- and ratio-agnostic. 
+We should point out that all row and column operations described here are size- and ratio-agnostic. 
 
 If the matrix is square or portrait shaped (rows >= columns), one can compute the upper-band-diagonal. If it is landscape-shaped, one can compute the lower-band-diagonal. This makes the band always reside in the upper-left square partition of $A$ and the remaining partition of $A$ being all zero. Phases 2 and 3 can then concentrate on the square partition of A.
 
