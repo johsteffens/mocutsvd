@@ -7,15 +7,14 @@
 
 ## Introduction
 
-[Singular Value Decomposition](https://en.wikipedia.org/wiki/Singular_value_decomposition) (SVD) is fundamentally important in linear algebra.
+The [Singular Value Decomposition](https://en.wikipedia.org/wiki/Singular_value_decomposition) decomposes a *m x n* Matrix *M* into Matrices $U$, $\Sigma$ , $V$ such that $\Sigma$ is [diagonal](https://en.wikipedia.org/wiki/Diagonal_matrix) and  $U$, $V$ are both [unitary](https://en.wikipedia.org/wiki/Unitary_matrix) and $M = U \cdot \Sigma \cdot V^\ast$. 
 
-The SVD decomposes a *m x n* Matrix *M* into Matrices $U$, $\Sigma$ , $V$ such that $\Sigma$ is [diagonal](https://en.wikipedia.org/wiki/Diagonal_matrix) and  $U$, $V$ are both [unitary](https://en.wikipedia.org/wiki/Unitary_matrix) and $M = U \cdot \Sigma \cdot V^\ast$. 
+The docomposition exists for any matrix. Designing a fast and numerically stable SVD algorithm, however, offers challenges.
+The method is fundamentally important in linear algebra and has many use cases in science and engineering.
 
-A SVD exists for any matrix. Designing a fast and numerically stable SVD algorithm, however, offers challenges.
+MocUT SVD resulted from research on platform agnostic computational efficiency to achieve [true scalable](true_scalability.md) [1] SVD. A symmetry in all phases of the computation that can be utilized for this goal. It yielded an oblique pattern of unitary transformations, named *Monoclinic Unitary Transformation* (MocUT). This new method offers a performance advantage over other contemporary SVD algorithms on general purpose multi-core CPUs.
 
-I investigating different platform-agnostic ways to achieve  [True Scalability](true_scalability.md) [1] in SVD and in the process developed a general purpose and highly portable SVD solution. I discovered an oblique pattern of unitary transformations, which can be used in all phases of the decomposition. I will use the term *Monoclinic Unitary Transformation* (MocUT) to describe this approach. MocUT SVD offers a performance edge over other contemporary SVD algorithms on general purpose multi-core CPUs.
-
-In this paper, I first cover how SVD is commonly approached, then describe the MocUT algorithm in detail and conclude with a performance comparison to SVD algorithms in publicly available linear-algebra libraries.
+This document first covers previous ways of performing the SVD and then focuses on the MocUT algorithm in detail.
 
 ## Matrix Decomposition
 
@@ -25,15 +24,13 @@ Lets express matrix $M$ by a generic decomposition $U$, $A$, $V$ of which $U$, $
 
 A trivial decomposition would be: $U = V = \underline{1}$ and $A = M$.
 
-The product of a unitary matrix with its adjunct $(P^\ast P)$ is the unity and the product of two unitary matrices is unitary. This is used to convert one decomposition into another:
+Since the product of a unitary matrix with its adjunct $(P^\ast P)$ is the unity and the product of two unitary matrices is also unitary, we can convert a decomposition into another:
 
 **(2)** 	$UAV^\ast = U(P^\ast P)A(Q^\ast Q) V^\ast = (UP^\ast)(PAQ^\ast)(QV^\ast) = U_{new} A_{new} V_{new}^\ast$
 
 Equation (2) represents an incremental step.
 
-Most decomposition algorithms convert A incrementally via unitary transformations (UT) into a desired shape. The initial state is the trivial decomposition, then a suitable UT-sequence $ P_i $, $ Q_j $ is computed to convert $A$ into the desired shape. 
-
-The incremental conversions on $U$ and $V$ are called ***back-transformations***. They can be omitted when $U$ or $V$ are not needed.
+Most decomposition algorithms use this approach to convert A incrementally into a desired shape. The incremental conversion on $U$ and $V$ is called ***back-transformation***. It can be omitted when $U$ or $V$ are not needed.
 
 Frequently used decompositions are:
 
