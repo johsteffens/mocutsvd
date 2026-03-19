@@ -75,7 +75,7 @@ $H_w$ is unitary because
 
 $H_w^\ast H_w = H_w H_w^\ast = (\underline{1} - 2 ww^\ast )( \underline{1} - 2 ww^\ast ) = \underline{1} - 4w w^\ast + 4w w^\ast w w^\ast = \underline{1} $
 
-The HR is numerically efficient because $H_w(v) = \underline{1}-2w(w^\ast v)$, which has a complexity of $O(n)$, ($n = dim( v )$). 
+The HR is numerically efficient because $H_w(v) = \underline{1}-2w(w^\ast v)$, which has a complexity of $O(n)$, ($n$ = dim( $v$ )). 
 
 The left-side reflection $H \cdot A$ affects $n$ rows in A. The right-side reflection $A \cdot H$ affects $n$ columns in $A$. 
 
