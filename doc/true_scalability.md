@@ -229,6 +229,7 @@ I conclude that mere numerical complexity is no sufficient assessment of expecte
 The baseline algorithm, used here, is rather simple. More complex numerical tasks used in linear algebra, such as matrix decomposition, require significantly more elaborate algorithmic solutions to achieve true scalability. 
 
 ## Web References
+The following references were used as inline links thoughout the document:
 
 https://en.wikipedia.org/wiki/Big_O_notation
 
