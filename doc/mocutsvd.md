@@ -12,7 +12,7 @@ The [Singular Value Decomposition](https://en.wikipedia.org/wiki/Singular_value_
 The docomposition exists for any matrix. Designing a fast and numerically stable SVD algorithm, however, offers challenges.
 The method is fundamentally important in linear algebra and has many use cases in science and engineering.
 
-MocUT SVD resulted from my research on platform agnostic computational efficiency to achieve [true scalable](true_scalability.md) [1] SVD. A symmetry in all phases of the computation that can be utilized for this goal. It yielded an oblique pattern of unitary transformations, named *Monoclinic Unitary Transformation* (MocUT). This new method offers a performance advantage over other contemporary SVD algorithms on general purpose multi-core CPUs.
+MocUT SVD resulted from my research on platform agnostic computational efficiency to achieve [true scalable](true_scalability.md) [1] SVD. A symmetry in all phases of the computation that can be utilized for this goal. It yielded an oblique pattern of unitary transformations, which I call *Monoclinic Unitary Transformation* (MocUT). This method offers a performance advantage over other contemporary SVD algorithms on general purpose multi-core CPUs.
 
 This document first covers previous ways of performing the SVD and then focuses on the MocUT algorithm in detail.
 
@@ -87,14 +87,14 @@ HR on a single vector has no natural [inner parallelity](true_scalability.md#inn
 
 ## The Golub-Reinsch SVD Approach
 
-The Golub-Reinsch Algorithm [2] is a classic and popular SVD algorithm. It consists of two phases:
+The Golub-Reinsch Algorithm [2] is a classic and popular SVD algorithm. It is composed of two processing-phases:
 
 1. **Bi-Diagonalizing $A$ via alternating left and right Householder reflections.**
 2. **Diagonalizing $A$ via alternating left and right Givens rotations: GR-Chasing.**
 
 Bi-Diagonalizing means: Zeroing all elements in $A$, except the main diagonal and one immediate sub-diagonal of $A$.
 
-Phase 1 zeros alternatingly the leftmost non-zero column under the main-diagonal via left UT $P_i$ , then the uppermost non-zero row right from the sub-diagonal via $Q_i$. This is done via Householder transformation as depicted in the following figure:
+Phase 1 iterates on a lower-right block matrix. Each iteration adds a new bi-diagonal row and column to the upper and left section of $A$ and shrinks the residual block accordingly. It is done by zeroing leftmost non-zero column under the main-diagonal via $P_i$ , then the uppermost non-zero row right from the sub-diagonal via $Q_i$. This can be achived with Householder transformation as depicted in the following figure:
 
 ![](image/bi_a/vis_000000.png)![](image/bi_a/vis_000001.png)![](image/bi_a/vis_000002.png)![](image/bi_a/vis_000003.png)![](image/bi_a/vis_000004.png)![](image/bi_a/vis_000005.png)![](image/bi_a/vis_000006.png)![](image/bi_a/vis_000007.png) **....** ![](image/bi_a/vis_000048.png)
 
@@ -112,17 +112,15 @@ $P_i$ and $Q_i$ are tightly coupled: To determine $P_i$, the $i$-th column of $(
 
 Hence, phase 1 in the Golub-Reinsch Algorithm is not [true-scalable](#true_scalable).
 
-Bi-diagonalization is the best one can achieve in a closed form (meaning: a predictably finite set of transformations). Any attempt to zero an element in the sub-diagonal will re-insert non-zeros somewhere else in the matrix.
+Bi-diagonalization is the best one can achieve in a closed form (meaning: a predictably finite set of transformations). Any attempt to zero an element in the sub-diagonal with a single unitary transformation will re-insert non-zeros somewhere else in the matrix.
 
-The second stage is a an iterative algorithm, by which $A$ converges into diagonal form. Theoretically, infinitely many cycles are needed for the exact solution. However, the convergence is so fast that an approximation with negligible residual error can be achieved with rather few cycles. Francis [3] [4] developed a practical algorithm for self-adjoint matrices. Later, Golub, Reinsch [2] [5] found an efficient and stable solution (chasing algorithm) for a general matrix.
+Therefore the second stage is a an iterative approximation, by which $A$ converges into diagonal form. Theoretically, infinitely many cycles are needed for the exact solution. However, the convergence is so fast that an approximation with negligible residual error can be achieved with few cycles. Francis [3] [4] developed a practical algorithm for symmetric matrices. Later, Golub, Reinsch [2] [5] generalized it by devloping an efficient and stable solution (chasing algorithm) for any matrix.
 
-Describing the full chasing algorithm goes beyond the scope of this document. At this point, it shall suffice to mention that the computational effort on $A$  alone is (nearly) negligible compared to phase 1 and therefore needs no specific consideration with respect to parallelity. The back-transformation-effort on $U$ and $V$, on the other hand, is significant and needs careful optimization. We will later pick up certain details to describe how the chasing-phase can be made [true-scalable](#true_scalable).
+Describing this algorithm goes beyond the scope of this document. At this point, it shall suffice to mention that the computational effort on $A$ alone is (nearly) negligible compared to phase 1 and therefore needs no specific consideration with respect to parallelity. The back-transformation on $U$ and $V$, on the other hand, is computationally expensive and needs careful optimization. We will later pick up certain details to describe how the chasing-phase can be made [true-scalable](#true_scalable).
 
 ## The DC Approach
 
-For sake of completeness, we briefly mention that for diagonalizing a bi-diagonal matrix, a stable and efficient divide an conquer approach has been developed by Ming Gu et al. [10]. The DC-approach differs significantly from the Golub-Reinsch GR-chasing. The DC-Approach appears to run faster at similar stability. It has been adopted by popular SVD software libraries. 
-
-However, we did not utilize the DC-Idea in MocUT-SVD.
+For sake of completeness, we briefly mention that for diagonalizing a bi-diagonal matrix, a stable and efficient divide an conquer approach has been developed by Ming Gu et al. [10]. The DC-approach is significantly different from the Golub-Reinsch GR-chasing. The DC-Approach appears to run faster at similar stability. It has been adopted by popular SVD software libraries. However, we did not utilize the DC-Idea in MocUT-SVD.
 
 ## The 3-Phase Band-Diagonal SVD Approach
 
@@ -144,11 +142,9 @@ Band-Diagonalizing means: Zeroing all elements in $A$ except the main diagonal a
 
 Within a single block $P_i$ and $Q_i$ are decoupled: To compute $P_i$, only those rows of $A$ need be known upfront, which are to be zeroed. In a transposed manner the same applies to $Q_i$. 
 
-An accumulated bundle of one-sided householder reflections can be converted into an efficient matrix-matrix multiplication. The method is known as the WY-representation of accumulated Householder Reflections [9]. 
+An accumulated bundle of one-sided householder reflections is converted into an efficient matrix-matrix multiplication by the WY-representation of accumulated Householder Reflections [9]. 
 
-An efficient algorithm for phase 2 (Band-Diagonal to Bi-Diagonal) was presented by B. Lang 1996 [7].
-
-He used left and right HR in a chasing algorithm to reduce the banded matrix to bi-diagonal. Th following figures depicts the process.
+B. Lang presented 1996 an efficient algorithm for phase 2 (Band-Diagonal to Bi-Diagonal)[7]. It uses left and right HR in a to reduce the banded matrix to bi-diagonal. The following figures depicts the process.
 
 ![](image/band_bi_a/vis_000000.png)![](image/band_bi_a/vis_000001.png)![](image/band_bi_a/vis_000002.png)![](image/band_bi_a/vis_000003.png)![](image/band_bi_a/vis_000004.png)![](image/band_bi_a/vis_000005.png)![](image/band_bi_a/vis_000006.png)![](image/band_bi_a/vis_000007.png)![](image/band_bi_a/vis_000008.png)![](image/band_bi_a/vis_000009.png)
 
@@ -162,11 +158,11 @@ The operations temporarily introduce off-band non-zeros in A, which will be chas
 
 The back-transformation on $U,V$, on the other hand, has approximately the same complexity as band-diagonalization. Therefore, this part should be done with careful optimization.  B. Lang [9] showed that the back-transformations can be rearranged in a cache-efficient manner and he suggests using the WY-representation for accrued left and right HR.
 
-His work spawned efforts on adapting the 3-phase solution to more specialized hardware such as the GPU, e.g. M. Gates et al. [11].
+Subsequent work focused on adapting the 3-phase solution using the BLAS framework on specialized hardware such as the GPU, e.g. M. Gates et al. [11].
 
 ## The MocUT Algorithm
 
-The MocUT SVD is a 3-phase algorithm. Its distinction from the previously discussed 3-phase approach is its usage of accrued unitary transformations. It does not attempt use the WY-Representation, is not dependent on any BLAS-library and it is designed for general purpose CPUs rather than specialized hardware. It achieves its performance advantage by chopping up the sequence of transformation into a set of suitable *"atomic"* transformations, and then finding a permutation with improved [data-locality](true_scalability.md#data-locality)
+The MocUT SVD is a 3-phase algorithm. Its distinction from the previously discussed 3-phase approach is its usage of accrued unitary transformations. It does not attempt use the WY-Representation, is not dependent on a specific BLAS-framework and it is designed for general purpose CPUs rather than specialized hardware. It achieves its performance advantage by chopping up the sequence of transformation into a set of suitable *"atomic"* transformations, and then finding a permutation with improved [data-locality](true_scalability.md#data-locality)
 
 To describe this approach, we begin with the observation that for all time-critical operations, we can use a set of accrued unitary transformations: In Phase 1, this applies to matrices $A$, $U$ and $V$. In Phases 2 and 3, only back-transformations on $U$ and $V$ are relevant: Residual computational effort on band-diagonal $A$ is negligible in comparison.
 
@@ -415,6 +411,11 @@ We have not explicitly used SIMD instructions in our code. While the compiler mi
 
 We have not investigated the [DC-SVD. Combining the MocUT approach with DC-SVD might yield further improvements.
 
+### Recent related work
+
+After my own research and most of the coding was completed but not yet published, I became aware of a 2025 publication by H. Wang et al. [14].
+It focuses on SVD-BLAS adaptation and argues that BLAS2 operations in eigenvalue decompositions can be superior to BLAS3 operations. In this paper, the authors take a similar stance towards back-transformation as I do. Their algorithm appears to be differnt from mine, though, and their focus is heterogeneous platforms, rather mine on general purpose CPUs.
+
 ## External References
 
 https://en.wikipedia.org/wiki/Singular_value_decomposition
@@ -461,13 +462,7 @@ https://doi.org/10.1016/j.parco.2017.10.004.
 
 [13]  G. W. Stewart, "The Economical Storage of Plane Rotations.", Numerische Mathematik 25 (1975/76): Pages 137-138, http://eudml.org/doc/132367
 
-
-
-
-
-
-
-
+[14]  H. Wang et al. "Rethinking Back Transformation in 2-stage EigenvalueDecomposition on Heterogeneous Architectures", Proceedings of SC '25: The International Conference for High Performance Computing, Networking, Storage and Analysis: Pages 1830 - 1844, https://dl.acm.org/doi/epdf/10.1145/3712285.3759770
 
 ____
 
