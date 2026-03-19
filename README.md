@@ -59,7 +59,7 @@ mocut_mat_s_discard( v );
   * Required: `-lm`. 
   * Recommended for general optimization: `-O3`
   * Recommended for advanced CPU specific optimization: `-march=native`. 
-  * Optional to unlock outer parallelity: `-fopenmp` (both: compiler and linker need this flag)
+  * Recommended to unlock outer parallelity: `-fopenmp` (both: compiler and linker need this flag)
 
 * **Example**: ```bash $ gcc -o mocutsvd_example example.c mocutsvd.c -fopenmp -march=native -O3 -lm```
 
