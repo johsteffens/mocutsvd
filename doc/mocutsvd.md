@@ -415,7 +415,9 @@ We have not investigated the DC-SVD. Combining the MocUT approach with DC-SVD mi
 After my own research and most of the coding was completed but not yet published, I became aware of a 2025 publication by H. Wang et al. [14].
 It focuses on EVD-BLAS adaptation and argues that BLAS2 operations in eigenvalue decompositions can be superior to BLAS3 operations. In this paper, the authors take a similar stance towards back-transformation as I do. Their algorithm appears to be differnt from mine, though, and their focus is heterogeneous platforms.
 
-## External References
+## Web References
+
+The following references were used as inline links thoughout the document:
 
 https://en.wikipedia.org/wiki/Singular_value_decomposition
 
