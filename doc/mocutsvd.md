@@ -12,7 +12,7 @@ The [Singular Value Decomposition](https://en.wikipedia.org/wiki/Singular_value_
 The docomposition exists for any matrix. Designing a fast and numerically stable SVD algorithm, however, offers challenges.
 The method is fundamentally important in linear algebra and has many use cases in science and engineering.
 
-MocUT SVD resulted from my research on platform agnostic computational efficiency to achieve [true scalable](true_scalability.md) [1] SVD. A symmetry in all phases of the computation that can be utilized for this goal. It yielded an oblique pattern of unitary transformations, which I call *Monoclinic Unitary Transformation* (MocUT). This method offers a performance advantage over other contemporary SVD algorithms on general purpose multi-core CPUs.
+MocUT SVD resulted from my research on platform agnostic computational efficiency to achieve [true scalable](true_scalability.md) [1] SVD. A symmetry in all phases of the computation that can be utilized for this goal. It yielded an oblique pattern of unitary transformations, which I call *Monoclinic Unitary Transformation* (MocUT). This method offers a performance advantage over other contemporary SVD algorithms on (homogenous) general purpose multi-core CPUs.
 
 This document first covers previous ways of performing the SVD and then focuses on the MocUT algorithm in detail.
 
@@ -372,11 +372,10 @@ for( int i = 0; i < m-1; i++ )
 
 
 
-## GitHub Solution
+## GitHub
 
 MocUT SVD is publicly available on a github repository under the following link: https://github.com/johsteffens/mocutsvd
-
-For this solution I also added enhanced stability and enhanced numeric accuracy by various techniques not covered in this document.
+This solution contains some additional improvements not covered in this document: Enhanced stability, enhanced numeric accuracy and a few speed related improvements.
 
 [mocutsvd](https://github.com/johsteffens/mocutsvd) was designed to be easily usable in an application or to be added to a linear-algebra library. I used a permissive royalty-free license in the hope that it receives adoption.
 
@@ -390,7 +389,7 @@ The performance was tested on different platforms, each containing the following
 
 Tested was the implementation in `mocutsvd.c` and  `mocutsvd.h`. The code was compiled using `gcc` with flags `-fopenmp -march=native -O3`.
 
-The following CPUs were used:
+Platforms with the following general purpose CPUs were used:
 * `TR 7960`: AMD Ryzen™ Threadripper™ 7960X, containing 24 cores
 * `RZ 5900`: AMD Ryzen™ 9 5900X, containing 12 cores
 * `i7 7700`: Intel® Core™ i7-7700, containing 4 cores
@@ -405,16 +404,16 @@ The chart below shows the absolution computation time across different values of
 
 We presented a new platform-agnostic algorithm for general purpose singular value decomposition. The methods used are designed to remain portable in consideration of likely future developments in computing hardware.
 
-Even though the implementation does not need hardware specific code, with a standard optimizing compiler an impressive performance can be achieved. 
+The implementation does not need hardware-specific code. The presented solution can achieve compettive performance just with standard optimizing compiler. 
 
-We have not explicitly used SIMD instructions in our code. While the compiler might utilize SIMD instructions during optimizations, there are indications that more recent instruction sets (e.g. AVX-512) offer yet untapped territory for further improvements.
+We do not explicitly use SIMD instructions. While the compiler might utilize SIMD instructions for optimization, there are indications that the most recent SIMD instruction sets (e.g. AVX-512) were not used in our test-compilatios.
 
-We have not investigated the [DC-SVD. Combining the MocUT approach with DC-SVD might yield further improvements.
+We have not investigated the DC-SVD. Combining the MocUT approach with DC-SVD might yield further improvements.
 
 ### Recent related work
 
 After my own research and most of the coding was completed but not yet published, I became aware of a 2025 publication by H. Wang et al. [14].
-It focuses on SVD-BLAS adaptation and argues that BLAS2 operations in eigenvalue decompositions can be superior to BLAS3 operations. In this paper, the authors take a similar stance towards back-transformation as I do. Their algorithm appears to be differnt from mine, though, and their focus is heterogeneous platforms, rather mine on general purpose CPUs.
+It focuses on EVD-BLAS adaptation and argues that BLAS2 operations in eigenvalue decompositions can be superior to BLAS3 operations. In this paper, the authors take a similar stance towards back-transformation as I do. Their algorithm appears to be differnt from mine, though, and their focus is heterogeneous platforms.
 
 ## External References
 
