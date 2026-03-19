@@ -12,7 +12,7 @@ The [Singular Value Decomposition](https://en.wikipedia.org/wiki/Singular_value_
 The docomposition exists for any matrix. Designing a fast and numerically stable SVD algorithm, however, offers challenges.
 The method is fundamentally important in linear algebra and has many use cases in science and engineering.
 
-MocUT SVD resulted from research on platform agnostic computational efficiency to achieve [true scalable](true_scalability.md) [1] SVD. A symmetry in all phases of the computation that can be utilized for this goal. It yielded an oblique pattern of unitary transformations, named *Monoclinic Unitary Transformation* (MocUT). This new method offers a performance advantage over other contemporary SVD algorithms on general purpose multi-core CPUs.
+MocUT SVD resulted from my research on platform agnostic computational efficiency to achieve [true scalable](true_scalability.md) [1] SVD. A symmetry in all phases of the computation that can be utilized for this goal. It yielded an oblique pattern of unitary transformations, named *Monoclinic Unitary Transformation* (MocUT). This new method offers a performance advantage over other contemporary SVD algorithms on general purpose multi-core CPUs.
 
 This document first covers previous ways of performing the SVD and then focuses on the MocUT algorithm in detail.
 
@@ -51,11 +51,15 @@ There are two commonly used classes of incremental unitary transformations:
 
 The [Givens Rotation](https://en.wikipedia.org/wiki/Givens_rotation) (GR) is a unitary transformation, which applies a 2D rotation on a 2D Vector. It is defined by a rotation angle $\phi$. 
 
-$G_\phi(v)= \left( \begin{matrix} av_1 - bv_2 \\ bv_1 + av_2 \end{matrix} \right)$ with $a=cos(\phi)$ and $b = sin(\phi)$
+With $a=cos(\phi)$ and $b = sin(\phi)$:
+
+$v_1 \rightarrow av_1 - bv_2$
+
+$v_2 \rightarrow bv_1 + av_2$
 
 The left-side rotation $G \cdot A$ on a matrix $A$ only affects two rows in A. The right-side rotation $A \cdot G$ only affects two columns in A. Both cases can be implemented as a sequence of independent 2D vector rotations, where the i-th 2-vector represents the i-th element in the two affected rows/columns. Hence, the matrix operation has a natural [inner parallelity](true_scalability.md#inner-parallelity).
 
-On a [row-major layout](#data-layout) the left-sided operation is well-scalable with minimal DRAM bursts, the right-sided operation is not. Hence: If possible,  $G \cdot A$ should be preferred over $A \cdot G$.
+On a [row-major layout](true_scalability.md##data-layout) the left-sided operation is well-scalable with minimal DRAM bursts, the right-sided operation is not. Hence: If possible the left-sided operation $G \cdot A$ should be preferred over the right-sided $A \cdot G$.
 
 A single Givens Rotation can be used to set one value in A to zero. With a strategic placement of multiple rotations, one can set a specified area in A to zero.
 
