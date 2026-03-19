@@ -65,7 +65,7 @@ A single Givens Rotation can be used to set one value in A to zero. With a strat
 
 ## Householder Reflection
 
-The [Householder Reflection](https://en.wikipedia.org/wiki/Householder_transformation) (HR) is a self-adjoint unitary transformation determined by a normalized vector $w$ and expressed in matrix-form as follows:
+The [Householder Reflection](https://en.wikipedia.org/wiki/Householder_transformation) (HR) is a self-adjoint unitary transformation determined by a normalized vector $w$. It is expressed in matrix-form as follows:
 
 $w^\ast w = 1$
 
@@ -79,9 +79,9 @@ The HR is numerically efficient because $H_w(v) = \underline{1}-2w(w^\ast v)$, w
 
 The left-side reflection $H \cdot A$ affects $n$ rows in A. The right-side reflection $A \cdot H$ affects $n$ columns in $A$. 
 
-The HR can be configured to set $n-1$ values in a specific vector to zero. A strategic placement of multiple HR, one can set a specified area in $A$ to zero. 
+The HR can be configured to set $n-1$ values in a vector to zero. A strategic placement of multiple HR, one can set a specified area in a matrix $A$ to zero. 
 
-GR and HR both can be used to achieve the same goal. Asymptotically ($n \gg 1$) a Householder reflection requires 25% fewer numeric operations than a corresponding sequence of ($n-1$) givens rotations. Givens rotations are more localized and thus offer more flexibility in algorithm design.
+GR and HR both can be used to achieve the same goal. Asymptotically ($n \gg 1$) a Householder reflection requires 25% fewer numeric operations than a corresponding sequence of ($n-1$) givens rotations. On the other hand, Givens rotations are more localized.
 
 HR on a single vector has no natural [inner parallelity](true_scalability.md#inner-parallelity), however, it can be performed with inner parallelity on a level 2 matrix-operation. We will show further down how it is done.
 
@@ -92,7 +92,7 @@ The Golub-Reinsch Algorithm [2] is a classic and popular SVD algorithm. It consi
 1. **Bi-Diagonalizing $A$ via alternating left and right Householder reflections.**
 2. **Diagonalizing $A$ via alternating left and right Givens rotations: GR-Chasing.**
 
-Bi-Diagonalizing means: Zeroing all elements in $A$ except the main diagonal and one immediate sub-diagonal of $A$.
+Bi-Diagonalizing means: Zeroing all elements in $A$, except the main diagonal and one immediate sub-diagonal of $A$.
 
 Phase 1 zeros alternatingly the leftmost non-zero column under the main-diagonal via left UT $P_i$ , then the uppermost non-zero row right from the sub-diagonal via $Q_i$. This is done via Householder transformation as depicted in the following figure:
 
