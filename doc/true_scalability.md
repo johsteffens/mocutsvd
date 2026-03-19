@@ -12,13 +12,13 @@ Numerical analysis is a fundamental discipline in sciences and engineering. The 
 
 Over time, the situation has shifted: Workstations, servers and even consumer- or embedded computing devices have one or more CPUs, each with with multiple independent processing cores. Each core typically offers a dedicated high-speed vectorized FPU, hyper-threading and multi-level caching. Processing speed today significantly depends on how well the algorithm is adapted to those architectural features. This specifically applies to [data-locality](https://en.wikipedia.org/wiki/Locality_of_reference) and [parallelity](https://en.wikipedia.org/wiki/Parallel_algorithm). While the traditional way of assessing numerical efficiency remains important, it may rank after above paradigms when it comes to assessing the expected computation time.
 
-Hardware-specific optimization or adaptation optimal efficiency is unpopular because it thwarts a developer's aim toward general purpose and platform-agnostic code. Luckily, the ability of compilers to generate optimized machine code has improved significantly as well. With [Open MP](https://www.openmp.org/), a standard was formed for parallelization, which has been adopted by many compiler tool-chains. 
+Hardware-specific optimization or adaptation optimal efficiency is less popular because it thwarts a developer's aim toward general purpose and platform-agnostic code. Luckily, the ability of compilers to generate optimized machine code has improved significantly as well. With [Open MP](https://www.openmp.org/), a standard was formed for parallelization, which has been adopted by many compiler tool-chains. 
 
-Platform agnosticism and hardware specific efficiency need no longer be a chasm of a contradiction.  It is bridged by a set of coding paradigms with which efficient, general purpose and future-proof code can be created.
+Platform agnosticism and hardware specific efficiency need no longer be a chasm of a contradiction. It is bridged by a set of coding paradigms with which efficient, general purpose and future-proof code can be created.
 
 Intuitively, we relate the execution-time of an algorithm solving a numeric problem to $\text{ numerical complexity } \over \text{ computational power }$. "*Computational power*" would be a function of : Number of CPU (-cores), CPU clock frequency, cache size & speed, RAM speed, etc. 
 
-Therefore, in this paper, I'd like to coin the term ***True-Scalable***, by describing five most important generic coding paradigms it involves. These are:
+Therefore, in this document, I'd like to coin the term ***True-Scalable***, by describing five most important generic coding paradigms it involves. These are:
 
 * **Data-Layout**
 * **Inner Parallelity**
