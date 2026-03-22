@@ -98,7 +98,7 @@ $ ./mocutsvd_test 10000 10000
 * **Memory Efficient**: Operates within the matrix-provided memory space and allocates no extra heap memory.
 * **Alignment**: The Matrix Interface takes care of optimal data alignment.
 * **Portable**: Platform-agnostic design.
-* **Stand-Alone**: Only depends on the c-standard library. No third-party library.
+* **Stand-Alone**: Only depends on the C standard library. No other third-party library.
 
 ___________________________________
 
