@@ -262,7 +262,7 @@ MocUT SVD offers some customization around memory handling.
 
 Function `mocut_svd` uses only the memory space provided by the matrices. Per default the matrix interface uses `stdlib` functions `aligned_alloc` and `free` for allocation and destruction. Alternatively, you can declare your custom memory functions or supply external memory to a matrix via function `mocut_mat_s_setup`. You can also control memory alignment.
 
-This opens possibilities for platforms with limited or non-standard memory management:
+This opens possibilities for environments with limited or non-standard memory management:
 
 ### Custom Memory Management
 
