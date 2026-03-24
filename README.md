@@ -30,7 +30,7 @@ for( size_t i = 0; i < a->rows; i++ )
 mocut_mat_s* u = mocut_mat_s_create(); // Matrix U*
 mocut_mat_s* v = mocut_mat_s_create(); // Matrix V*
 
-// SVD: A -> U*, Σ, V*; computing singular vectors U*, V* is optional; pass NULL where not needed.
+// SVD: A -> U*, Σ, V*; computing singular vectors in U* or V* is optional; pass NULL where not needed.
 mocut_svd( a, u, v ); 
 
 // At this point: 
