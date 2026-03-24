@@ -54,9 +54,7 @@ The [Givens Rotation](https://en.wikipedia.org/wiki/Givens_rotation) (GR) is a u
 
 With $a=cos(\phi)$ and $b = sin(\phi)$:
 
-$v_1 \rightarrow av_1 - bv_2$
-
-$v_2 \rightarrow bv_1 + av_2$
+$(v_1,v_2)^\ast \rightarrow (av_1 - bv_2, bv_1 + av_2)^\ast$
 
 The left-side rotation $G \cdot A$ on a matrix $A$ only affects two rows in A. The right-side rotation $A \cdot G$ only affects two columns in A. Both cases can be implemented as a sequence of independent 2D vector rotations, where the i-th 2-vector represents the i-th element in the two affected rows/columns. Hence, the matrix operation has a natural [inner parallelity](true_scalability.md#inner-parallelity).
 
