@@ -311,6 +311,7 @@ MocUT SVD [aligns](doc/true_scalability.md#data-alignment) matrix data to improv
 
 ``` C
 #define MOCUT_VAL_ALIGN 32 // aligns matrix rows to multiple of 32 double values (32*8 bytes)
+#include "mocutsvd.h"
 ```
 
 ## Side Effects and Remedies
