@@ -294,13 +294,13 @@ In this case you cannot use functions `mocut_mat_s_create`, `mocut_mat_s_discard
 Instead, place the matrix instance on the stack and use functions `mocut_mat_s_init`, `mocut_mat_down`, `mocut_mat_setup`.
 
 ``` C
-mocut_mat_s a; // instance a placed on the stack
-mocut_mat_s_init( &a ); // instance a is initialized
-mocut_mat_s_setup( &a, rows, cols, stride, data ); // assigning an external matrix data area
+mocut_mat_s a; // instance 'a' placed on the stack
+mocut_mat_s_init( &a ); // instance 'a' is initialized
+mocut_mat_s_setup( &a, rows, cols, stride, data ); // assigning an external matrix data area to 'a'
 
-... // working with a
+... // working with 'a'
 
-mocut_mat_s_down( &a ); // instance a is cleaned up
+mocut_mat_s_down( &a ); // instance 'a' is cleaned up
 ```
 
 **Note:** Without memory management, [alignment](doc/true_scalability.md#data-alignment) is your responsibility.
