@@ -262,5 +262,6 @@ https://en.wikipedia.org/wiki/Strassen_algorithm
 [1] Chengliang Zhang et al, A Hierarchical Model of Data Locality, POPL '06 Proceedings, Pages 16 - 29, https://dl.acm.org/doi/proceedings/10.1145/1111037
 
 
+____
 
-&copy; Johannes B. Steffens
+&copy; 2026 Johannes B. Steffens
