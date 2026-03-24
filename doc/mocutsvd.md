@@ -9,12 +9,13 @@
 
 The [Singular Value Decomposition](https://en.wikipedia.org/wiki/Singular_value_decomposition) decomposes a *m x n* Matrix *M* into Matrices $U$, $\Sigma$ , $V$ such that $\Sigma$ is [diagonal](https://en.wikipedia.org/wiki/Diagonal_matrix) and  $U$, $V$ are both [unitary](https://en.wikipedia.org/wiki/Unitary_matrix) and $M = U \cdot \Sigma \cdot V^\ast$. 
 
-The docomposition exists for any matrix. Designing a fast and numerically stable SVD algorithm, however, offers challenges.
-The method is fundamentally important in linear algebra and has many use cases in science and engineering.
+The docomposition exists for any matrix. Designing a fast, numerically stable and well scalable SVD algorithm, however, offers challenges.
 
-MocUT SVD resulted from my research on platform agnostic computational efficiency to achieve [true scalable](true_scalability.md) [1] SVD. A symmetry in all phases of the computation that can be utilized for this goal. It yielded an oblique pattern of unitary transformations, which I call *Monoclinic Unitary Transformation* (MocUT). This method offers a performance advantage over other contemporary SVD algorithms on (homogenous) general purpose multi-core CPUs.
+Since, the method is fundamentally important in linear algebra and has many use cases in science and engineering, overcoming these difficulties seems a worthy goal.
 
-This document first covers previous ways of performing the SVD and then focuses on the MocUT algorithm in detail.
+MocUT SVD resulted from my research on platform agnostic computational efficiency to achieve [true scalable](true_scalability.md) [1] SVD. I discovered a symmetry in all phases of the computation that can be utilized for this goal. It yielded an oblique pattern of unitary transformations, which I call *Monoclinic Unitary Transformation* (MocUT). This method offers a performance advantage over other contemporary SVD algorithms on (homogenous) general purpose multi-core CPUs.
+
+This document first covers traditional methods of performing the SVD and then focuses on the MocUT algorithm in detail.
 
 ## Matrix Decomposition
 
