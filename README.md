@@ -63,7 +63,7 @@ mocut_mat_s_discard( v );
 
 * **Example**: ```bash $ gcc -o mocutsvd_example example.c mocutsvd.c -fopenmp -march=native -O3 -lm```
 
-* There is also a simple [makefile](makefile), which you might want to inspect.
+* There is also a simple [makefile](makefile).
 
 ### Example Application
 
