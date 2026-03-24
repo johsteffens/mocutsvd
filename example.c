@@ -1,4 +1,5 @@
 /// Author and Copyright 2026 Johannes Bernhard Steffens
+/// https://github.com/johsteffens/mocutsvd
 
  /** This simple example program demonstrates the usage of mocutsvd.
   *  You may freely use code snippets from this file for your own integration of mocutsvd.
