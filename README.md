@@ -197,7 +197,7 @@ The stride value is set automatically for optimal alignment during matrix-alloca
 * **```int mocut_mat_s_setup( mocut_mat_s* o, size_t rows, size_t cols, size_t stride, double* data )```**
    * Makes the matrix use external data. The ABI of the external matrix must be compatible (strided row-major layout). The external matrix data is neither copied nor owned by `mocut_mat_s`. It will not be freed by `mocut_mat_s_discard`. The external data must stay alive and valid during the lifetime of the `mocut_mat_s` instance.
    * The purpose of this function is to simplify the integration of `mocutsvd` into a codebase that uses its own matrix representation.
-   * **Note:** Using `mocut_mat_s_setup` with unaligned external data (`stride=cols`) is allowed but can limit the effectiveness of cache and vectorization in function `mocut_svd`.
+   * **Note:** Using `mocut_mat_s_setup` with unaligned external data (`stride=cols`) is allowed. Unaligned rows can reduce SVD efficiency slightly.
    * **Return:** 
       * `0`: Success
       * `>0`: Error Code.
