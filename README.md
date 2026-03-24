@@ -118,7 +118,7 @@ MocUT SVD is adapted to optimally utilize modern CPU architectures. Specifically
 
 At the same time the code maintains high portability: It only requires compliance to the C11 (or later) standard. Hence, the code is compilable by todays compiler-tool-chains for most operating systems and platforms.
 
-Portability is achieved by utilizing [generic coding paradigms](doc/true-scalability.md) that help the compiler applying platform specific optimizations. Outer parallelity is achieved via [Open MP](https://en.wikipedia.org/wiki/OpenMP).
+Portability is achieved by utilizing [generic coding paradigms](doc/true_scalability.md) that help the compiler applying platform specific optimizations. Outer parallelity is achieved via [Open MP](https://en.wikipedia.org/wiki/OpenMP).
 
 #### Transposed $U$, $V$
 
