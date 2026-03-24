@@ -208,9 +208,6 @@ The stride value is set automatically for optimal alignment during matrix-alloca
 * **```mocut_mat_s* mocut_mat_s_create_setup( size_t rows, size_t cols, size_t stride, double* data )```**
    * Convenience function: Combination of `mocut_mat_s_create` and `mocut_mat_s_setup`. Returns NULL in case of error.
   
-* **```mocut_mat_s* mocut_mat_s_create_setup( size_t rows, size_t cols, size_t stride, double* data )```**
-   * Convenience function: Combination of `mocut_mat_s_create` and `mocut_mat_s_setup`. Returns NULL in case of error.
-
 * **```int mocut_mat_s_copy( mocut_mat_s* o, const mocut_mat_s* m )```**  
    * Copies the matrix data from `m` to `o`. 
    * Both matrices must be allocated to the same size: `(o.rows==m.rows) && (o.cols==m.cols)`
