@@ -280,7 +280,7 @@ In the example below, the memory manager [TBMAN](https://github.com/johsteffens/
 #include "mocutsvd.h"
 ```
 
-### Custom Memory Management
+### No Memory Management
 
 If you wish to prevent MocUT SVD from using any memory management at all, define `MOCUT_NO_MEM_ALLOC` before including `mocutsvd.h`.
 
