@@ -7,9 +7,7 @@ Singular Value Decomposition is the method of finding the three components $U, \
 MocUT SVD is an efficient, easy-to-use and highly portable stand-alone-implementation for C or C++ programs. It was completely redesigned from scratch and contains several improvements compared to traditional implementations. It is specially optimized for modern CPU architectures.
 
 * Quick Evaluation: [mocutsvd_test](#quick-test)
-  
 * Quick Example: [mocutsvd_example](#quick-example)
-
 * Performance: [Charts](#performance-charts)
 
 ## In a Nutshell
