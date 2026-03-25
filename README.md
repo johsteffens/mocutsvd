@@ -98,7 +98,7 @@ $ ./mocutsvd_test 10000 10000
 * **True-Scalable**: Fast and efficient computation for small up to very large matrices.
 * **Parallel**: With (inner and outer) parallelity. By default all available CPU-cores are used.
 * **In-Place**: Operates within the matrix-provided memory space and allocates no extra heap memory.
-* **Alignment**: The Matrix Interface takes care of optimal data alignment.
+* **Alignment**: The matrix-interface takes care of optimal data alignment.
 
 ___________________________________
 
