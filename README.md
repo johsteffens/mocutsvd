@@ -197,13 +197,13 @@ The stride value is set automatically for optimal alignment during matrix-alloca
    * This function takes care of proper data-alignment for optimal SVD-performance.
    * **Return:** 
       * `0`: Success    
-      * `>0`: Error Code (Allocation failed).
+      * `>0`: [Error Code](#error-handling) (Allocation failed).
    
 * **```int mocut_mat_s_set( mocut_mat_s* o, size_t row, size_t col, double value );```**
    * Sets element value at position `[row][col]`.
    * **Return:**       
       * `0`: Success
-      * `>0`: Error (Index out of rage).
+      * `>0`: [Error Code](#error-handling) (Index out of rage).
 
 * **```double mocut_mat_s_get( const mocut_mat_s* o, size_t row, size_t col );```**
    * Returns element value at position `[row][col]`. If `row` or `col` is out of range, `0` is returned.
@@ -222,7 +222,7 @@ The stride value is set automatically for optimal alignment during matrix-alloca
    * **Note:** Using `mocut_mat_s_setup` with unaligned external data (`stride=cols`) is allowed. Unaligned rows can reduce SVD efficiency slightly.
    * **Return:** 
       * `0`: Success
-      * `>0`: Error Code.
+      * `>0`: [Error Code](#error-handling)
 
 * **```mocut_mat_s* mocut_mat_s_create_alloc( size_t rows, size_t cols )```**  
    * Convenience function: Combination of `mocut_mat_s_create` and `mocut_mat_s_alloc`. Returns NULL in case of error.
@@ -235,7 +235,7 @@ The stride value is set automatically for optimal alignment during matrix-alloca
    * Both matrices must be allocated to the same size: `(o.rows==m.rows) && (o.cols==m.cols)`
    * **Return:** 
       * `0`: Success
-      * `>0`: Error Code.
+      * `>0`: [Error Code](#error-handling)
   
 * **```int mocut_mat_s_copy_transposed( mocut_mat_s* o, const mocut_mat_s* m )```**
    * Copies the transposed matrix data from `m` to `o`. 
@@ -243,7 +243,7 @@ The stride value is set automatically for optimal alignment during matrix-alloca
    * In case of a square matrix `(rows == cols)`, `o` and `m` may reference the same matrix: In-place transposition.
    * **Return:** 
       * `0`: Success
-      * `>0`: [Error Code](#error-handling).
+      * `>0`: [Error Code](#error-handling)
 
 ### SVD-Function
 
@@ -267,7 +267,7 @@ The final phase of the SVD is an iterative process that converges to the correct
 
 * `0`: Success
 * MOCUT_WRN_CONVERGENCE: Insufficient convergence
-* `Other >0`: See Error Code. 
+* `Other >0`: [Error Code](#error-handling) 
 
 ## Thread Safety
 
