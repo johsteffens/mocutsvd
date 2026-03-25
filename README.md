@@ -338,11 +338,7 @@ By default MocUT SVD spawns multiple threads according to the number of logical 
 
 * If you wish to run it only in the caller thread, avoid using the flag `-fopenmp` with compiler and linker. 
 
-* If you want to prevent MocUT SVD using OpenMP at all, comment out the compiler directives
-
-​	```#pragma omp parallel for```
-
-​	in ```mocutsvd.h``` and ```mocutsvd.c```
+* If you want to prevent MocUT SVD using OpenMP at all, comment out the compiler directives​ `#pragma omp parallel for` in `mocutsvd.h` and `mocutsvd.c`
 
 * If you wish more specific thread controls, look up the Open MP documentation: [https://www.openmp.org](https://www.openmp.org)
 
