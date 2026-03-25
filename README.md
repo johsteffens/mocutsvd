@@ -6,9 +6,19 @@ Singular Value Decomposition is the method of finding the three components $U, \
 
 MocUT SVD is an efficient, easy-to-use and highly portable stand-alone-implementation for C or C++ programs. It was completely redesigned from scratch and contains several improvements compared to traditional implementations. It is specially optimized for modern CPU architectures.
 
-* Quick Evaluation: [mocutsvd_test](#quick-test)
-* Quick Example: [mocutsvd_example](#quick-example)
-* Performance: [Charts](#performance-charts)
+### Benefits
+
+* **Stand-Alone**: Only depends on the C standard library. No third-party library required.
+* **Portable**: Platform-agnostic design.
+* **Stable**: MocUT SVD has same or better convergence stability as the widely used Golub-Kahan-Reinsch SVD approach.
+* **True-Scalable**: Fast and efficient computation for small up to very large matrices.
+* **Parallel**: With (inner and outer) parallelity. By default all available CPU-cores are used.
+* **In-Place**: Operates within the matrix-provided memory space and allocates no extra heap memory.
+
+### Quick Start
+* [Evaluation](#quick-test)
+* [Example](#quick-example)
+* [Performance Charts](#performance-charts)
 
 ## In a Nutshell
 
@@ -76,9 +86,10 @@ git clone https://github.com/johsteffens/mocutsvd
 cd mocutsvd
 make mocutsvd_test
 
-# 5000x5000-random matrix: Runs SVD; tests accuracy and measures comutation time.
+# Runs SVD on a random matrix of specified size; tests accuracy and measures comutation time.
 ./mocutsvd_test 5000 5000 
 ```
+
 Possible output: (Timing values from a platform with 16 HT cores)
 
 ```
@@ -110,16 +121,6 @@ make mocutsvd_example
 [`example.c`](example.c) contains a short example application intended to quickly learn the mocut-matrix-format and mocut-svd usage.
 It outputs all matrix values to stdout. Use this program for smaller matrices.
 To test the svd-performance on large matrices, use [mocutsvd_test](#quick-test).
-
-### Benefits
-
-* **Stand-Alone**: Only depends on the C standard library. No third-party library required.
-* **Portable**: Platform-agnostic design.
-* **Stable**: MocUT SVD has same or better convergence stability as the widely used Golub-Kahan-Reinsch SVD approach.
-* **True-Scalable**: Fast and efficient computation for small up to very large matrices.
-* **Parallel**: With (inner and outer) parallelity. By default all available CPU-cores are used.
-* **In-Place**: Operates within the matrix-provided memory space and allocates no extra heap memory.
-* **Alignment**: The matrix-interface takes care of optimal data alignment.
 
 ___________________________________
 
