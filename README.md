@@ -92,13 +92,13 @@ $ ./mocutsvd_test 10000 10000
 
 ### Benefits
 
+* **Stand-Alone**: Only depends on the C standard library. No third-party library required.
+* **Portable**: Platform-agnostic design.
 * **Stable**: MocUT SVD has same or better convergence stability as the widely used Golub-Kahan-Reinsch SVD approach.
 * **True-Scalable**: Fast and efficient computation for small up to very large matrices.
 * **Parallel**: With (inner and outer) parallelity. By default all available CPU-cores and CPU-threads are used.
-* **Memory Efficient**: Operates within the matrix-provided memory space and allocates no extra heap memory.
+* **In-Place**: Operates within the matrix-provided memory space and allocates no extra heap memory.
 * **Alignment**: The Matrix Interface takes care of optimal data alignment.
-* **Portable**: Platform-agnostic design.
-* **Stand-Alone**: Only depends on the C standard library. No third-party library required.
 
 ___________________________________
 
