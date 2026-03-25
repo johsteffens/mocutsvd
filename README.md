@@ -75,11 +75,11 @@ mocut_mat_s_discard( v );
 git clone https://github.com/johsteffens/mocutsvd
 cd mocutsvd
 make mocutsvd_test
-# Runs MocUT SVD on a (5000x5000) random matrix.
-# Tests SVD accuracy and measures comutation time.
+
+# Test a (5000x5000) random matrix: Runs SVD; tests accuracy and measures comutation time.
 ./mocutsvd_test 5000 5000 
 ```
-Possible output:
+Possible output: (Timing values from a platform with 16 HT cores)
 
 ```
 M = Randomized matrix of size (5000 x 5000).
