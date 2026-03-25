@@ -76,7 +76,7 @@ git clone https://github.com/johsteffens/mocutsvd
 cd mocutsvd
 make mocutsvd_test
 
-# Test a (5000x5000) random matrix: Runs SVD; tests accuracy and measures comutation time.
+# 5000x5000-random matrix: Runs SVD; tests accuracy and measures comutation time.
 ./mocutsvd_test 5000 5000 
 ```
 Possible output: (Timing values from a platform with 16 HT cores)
