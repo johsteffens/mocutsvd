@@ -136,7 +136,7 @@ MocUT SVD is an algorithm for singular value decomposition.  Given a matrix $M$,
 
 #### Platform Support
 
-MocUT SVD is adapted to optimally utilize modern CPU architectures. Specifically: Multiple-cores, multi-layered caching, intrinsic vectorization (inner paralelity) and hyper-threading.
+MocUT SVD is designed to utilize modern CPU architectures. Specifically: Multiple-cores, multi-layered caching, intrinsic vectorization (inner paralelity) and hyper-threading.
 
 At the same time the code maintains high portability: It only requires compliance to the C11 (or later) standard. Hence, the code is compilable by todays compiler-tool-chains for most operating systems and platforms.
 
