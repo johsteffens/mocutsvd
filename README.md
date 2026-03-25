@@ -10,6 +10,8 @@ MocUT SVD is an efficient, easy-to-use and highly portable stand-alone-implement
   
 * Quick Example: [mocutsvd_example](#quick-example)
 
+* Performance: [Charts](#performance-charts)
+
 ## In a Nutshell
 
 You only need the two files `mocutsvd.h` and `mocutsvd.c`. 
@@ -357,7 +359,7 @@ Advanced debugging tools like `valgrind` analyze the instructions and memory usa
 
 To analyze code with `valgrind`, do not use these compiler flags.
 
-## Performance
+## Performance Charts
 
 ![](doc/image/duration_tests.png)
 
