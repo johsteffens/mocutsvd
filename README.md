@@ -4,7 +4,7 @@
 
 Singular Value Decomposition is the method of finding the three components $U, \Sigma, V$ to an arbitrary (m x n) matrix $M$, which satisfy the equation $M = U \cdot \Sigma \cdot V^\ast$ . Where $\Sigma$ is a diagonal matrix containing singular values and $U$, $V$ are unitary matrices containing left and right singular vectors. The SVD algorithm is of critical importance in science and engineering.
 
-MocUT SVD is an efficient, easy-to-use and highly portable stand-alone-implementation for C or C++ programs. It was completely redesigned from scratch and contains several improvements compared to traditional implementations. It is specially optimized for modern CPU architectures.
+MocUT SVD is an efficient, easy-to-use and portable stand-alone-implementation for C or C++ programs. It was completely redesigned from scratch and contains several improvements compared to traditional implementations. It is specially optimized for modern CPU architectures.
 
 ### Benefits
 
