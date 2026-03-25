@@ -12,7 +12,7 @@ MocUT SVD is an efficient, easy-to-use and highly portable stand-alone-implement
 * **Portable**: Platform-agnostic design.
 * **Stable**: MocUT SVD has same or better convergence stability as the widely used Golub-Kahan-Reinsch SVD approach.
 * **Fast**: Efficient [true-scalable](doc/true_scalability.md) computation for small up to very large matrices.
-* **Parallel**: With (inner and outer) parallelity. By default all available CPU-cores are used.
+* **Parallel**: With ([inner](doc/true_scalability.md#inner_parallelity) and [outer](doc/true_scalability.md#outer_parallelity)) parallelity. By default all available CPU-cores are used.
 * **In-Place**: Operates within the matrix-provided memory space and allocates no extra heap memory.
 
 ### Quick Start
