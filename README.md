@@ -6,6 +6,10 @@ Singular Value Decomposition is the method of finding the three components $U, \
 
 MocUT SVD is an efficient, easy-to-use and highly portable stand-alone-implementation for C or C++ programs. It was completely redesigned from scratch and contains several improvements compared to traditional implementations. It is specially optimized for modern CPU architectures.
 
+* Quick Evaluation: [mocutsvd_test](#quick-test)
+  
+* Quick Example: [mocutsvd_example](#quick-example)
+
 ## In a Nutshell
 
 You only need the two files `mocutsvd.h` and `mocutsvd.c`. 
@@ -65,30 +69,47 @@ mocut_mat_s_discard( v );
 
 * There is also a simple [makefile](makefile).
 
-### Example Application
-
-[`example.c`](example.c) contains a short and easy to learn example application. It outputs the decomposition to stdout:
+### Quick Test
 
 ```bash
-$ make mocutsvd_example
+git clone https://github.com/johsteffens/mocutsvd
+cd mocutsvd
+make mocutsvd_test
+# Runs MocUT SVD on a (5000x5000) random matrix.
+# Tests SVD accuracy and measures comutation time.
+./mocutsvd_test 5000 5000 
+```
+Possible output:
 
-$ # run on 5 x 10 matrix
-$ ./mocutsvd_example 5 10
+```
+M = Randomized matrix of size (5000 x 5000).
+Running SVD M -> U*, Σ, V* : (7.37 sec)
+Testing Reconstruction: R = U·Σ·V* : (1.00 sec) RMS(R-M)   : 9.49e-15 -> Successful
+Testing Orthonormality of U*       : (1.41 sec) RMS(U*·U-I): 1.67e-16 -> Successful
+Testing Orthonormality of V*       : (1.42 sec) RMS(V*·V-I): 1.73e-16 -> Successful
 ```
 
-### Evaluation Application
+[`test.c`](test.c) is intended for performance testing. 
+It creates a random matrix, decomposes it with a time measurement, reconstructs the original form the decomposed factors and computes the RMS-error of the reconstruction.
 
-[`test.c`](test.c) can be used for performance testing on larger matrices. It creates a random matrix, decomposes it with a time measurement, reconstructs the original form the decomposed factors and computes the RMS-error of the reconstruction:
+Usage: `./mocutsvd_test <rows> <columns>`
+For a list of all options, run `./mocutsvd_test` without arguments.
+
+For a quick example-basd introduction, use [mocutsvd_example](#quick-example).
+
+### Quick Example
 
 ```bash
-$ make mocutsvd_test
-
-$ # running without arguments outputs all options:
-$ ./mocutsvd_test 
-
-$ # runs a test on a 10000 x 10000 matrix:
-$ ./mocutsvd_test 10000 10000 
+git clone https://github.com/johsteffens/mocutsvd
+cd mocutsvd
+make mocutsvd_example
+# Runs MocUT SVD on a (5x8) random matrix.
+# Outputs all Matrix values
+./mocutsvd_example 5 8 
 ```
+[`example.c`](example.c) contains a short example application intended to quickly learn the mocut-matrix-format and mocut-svd usage.
+It outputs all matrix values to stdout. Use this program for smaller matrices.
+To test the svd-performance on large matrices, use [mocutsvd_test](#quick-test).
 
 ### Benefits
 
