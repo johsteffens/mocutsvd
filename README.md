@@ -132,7 +132,7 @@ MocUT SVD is an algorithm for singular value decomposition.  Given a matrix $M$,
 
 #### About the Name
 
-**MocUT** is a shortcut for Monoclinic Unitary Transformation, which is a special kind of recurring transformation pattern I designed for this SVD solution. More details can be found in the whitepaper: [MocUT SVD: Singular Value Decomposition via Monoclinic Unitary Transformations](doc/mocutsvd.md).
+**MocUT** is a shortcut for Monoclinic Unitary Transformation, which is a special kind of recurring transformation pattern I designed for this SVD solution. More details can be found in this whitepaper: [MocUT SVD: Singular Value Decomposition via Monoclinic Unitary Transformations](doc/mocutsvd.md).
 
 #### Platform Support
 
