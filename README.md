@@ -103,8 +103,8 @@ For a quick example-basd introduction, use [mocutsvd_example](#quick-example).
 git clone https://github.com/johsteffens/mocutsvd
 cd mocutsvd
 make mocutsvd_example
-# Runs MocUT SVD on a (5x8) random matrix.
-# Outputs all Matrix values
+
+# Runs MocUT SVD on a (5x8) random matrix. Outputs all Matrix values to stdout.
 ./mocutsvd_example 5 8 
 ```
 [`example.c`](example.c) contains a short example application intended to quickly learn the mocut-matrix-format and mocut-svd usage.
