@@ -90,7 +90,7 @@ make mocutsvd_test
 ./mocutsvd_test 5000 5000 
 ```
 
-Possible output: (Timing values from a platform with 16 HT cores)
+Possible output: (Test on a workstation with 16 HT cores)
 
 ```
 M = Randomized matrix of size (5000 x 5000).
