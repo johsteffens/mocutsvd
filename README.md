@@ -243,7 +243,7 @@ The stride value is set automatically for optimal alignment during matrix-alloca
    * In case of a square matrix `(rows == cols)`, `o` and `m` may reference the same matrix: In-place transposition.
    * **Return:** 
       * `0`: Success
-      * `>0`: Error Code.
+      * `>0`: [Error Code](#error-handling).
 
 ### SVD-Function
 
