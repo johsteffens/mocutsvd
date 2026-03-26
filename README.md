@@ -106,7 +106,7 @@ It creates a random matrix, decomposes it with a time measurement, reconstructs 
 Usage: `./mocutsvd_test <rows> <columns>`
 For a list of all options, run `./mocutsvd_test` without arguments.
 
-For a quick example-basd introduction, use [mocutsvd_example](#quick-example).
+For a quick example-based introduction, use [mocutsvd_example](#quick-example).
 
 ### Quick Example
 
