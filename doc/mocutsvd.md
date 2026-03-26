@@ -267,7 +267,7 @@ $P_{1,2} \rightarrow P_{2,2} \rightarrow P_{3,2} \rightarrow \ldots \rightarrow$
 
 $P_{1,1} \rightarrow P_{2,1} \rightarrow P_{3,1} \rightarrow \ldots$
 
-These form the same monoclinic patterns as described in phase 1. Therefore, we can construct practically the same algorithm as used in phase 1: In phase 1 is the monoclinic tiles overlap by one row. In phase 2 they do not, which minor detail is easy to be parametrized.
+These form the same monoclinic patterns as described in phase 1. Therefore, we can construct practically the same algorithm as used in phase 1: In phase 1 is the monoclinic tiles overlap by one row. In phase 2 they do not, which minor detail is easily parametrized.
 
 ### Phase 3
 
