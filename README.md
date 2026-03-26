@@ -128,7 +128,7 @@ ___________________________________
 
 ## Detailed Description
 
-MocUT SVD is an algorithm for singular value decomposition.  Given a matrix $M$, it calculates the matrices $U^\ast, \Sigma, V^\ast$ such that  $M = U \cdot \Sigma \cdot V^\ast$ .  It is based on the Golub-Kahan-Reinsch approach and inherits its proven stability. It is newly developed with many performance-critical improvements.
+MocUT SVD is an algorithm for singular value decomposition.  Given a matrix $M$, it calculates the matrices $U^\ast, \Sigma, V^\ast$ such that  $M = U \cdot \Sigma \cdot V^\ast$ .  It is derived from the Golub-Kahan-Reinsch approach and inherits its proven stability. It is newly developed with many performance-critical improvements.
 
 #### About the Name
 
