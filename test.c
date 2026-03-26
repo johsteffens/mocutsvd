@@ -76,20 +76,6 @@ void mat_randomize( mocut_mat_s* m, uint64_t seed )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-int value_is_nan( double v ) { return v != v; } // nan compares unequal to itself
-
-/// Returns 1 if the array contains an invalid number, 0 otherwise
-int mat_contains_nan( const mocut_mat_s* m )
-{
-    for( size_t i = 0; i < m->rows; i++ )
-        for( size_t j = 0; j < m->cols; j++ )
-            if( value_is_nan( mocut_mat_s_get( m, i, j ) ) ) return 1;
-
-    return 0;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
 void mat_print( const mocut_mat_s* m )
 {
     if( m->rows > 1 ) printf( "(%zu x %zu)\n", m->rows, m->cols );
