@@ -8,12 +8,12 @@ MocUT SVD is an efficient, easy-to-use and portable stand-alone-implementation f
 
 ### Benefits
 
-* **Stand-Alone**: Only depends on the C standard library. No third-party library required.
-* **Portable**: Platform-agnostic design.
 * **Stable**: Same or better stability as the widely used Golub-Kahan-Reinsch SVD approach.
 * **Fast**: Efficient [true-scalable](doc/true_scalability.md) computation for small up to very large matrices.
 * **Parallel**: By default all available CPU-cores are used.
 * **In-Place**: Operates within the matrix-provided memory space and allocates no extra heap memory.
+* **Stand-Alone**: Only depends on the C standard library. No third-party library required.
+* **Portable**: Platform-agnostic design.
 
 ### Quick Start
 * [Evaluation](#quick-test)
