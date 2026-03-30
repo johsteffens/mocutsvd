@@ -148,7 +148,7 @@
  *  A higher limit may salvage the situation in the rare case that
  *  convergence is merely slow but not stalled.
  */
-#define SVD_CYCLE_LIMIT_FACTOR 5
+#define SVD_CYCLE_LIMIT_FACTOR 50
 
 //----------------------------------------------------------------------------------------------------------------------
 
