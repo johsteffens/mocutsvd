@@ -362,6 +362,6 @@ Absolute processing time in seconds for a full decomposition of a ($n$ x  $n$) m
 
 The following CPUs were used:
 * `TR 7960`: AMD Ryzen™ Threadripper™ 7960X, containing 24 cores
-* `RZ 5900`: AMD Ryzen™ 9 5900X, containing 12 cores
+* `RZ 5800`: AMD Ryzen™ 7 5800X, containing 8 cores
 * `i7 7700`: Intel® Core™ i7-7700, containing 4 cores
 
