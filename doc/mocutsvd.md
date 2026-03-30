@@ -391,7 +391,7 @@ Tested was the implementation in `mocutsvd.c` and  `mocutsvd.h`. The code was co
 Platforms with the following general purpose CPUs were used:
 * `TR 7960`: AMD Ryzen™ Threadripper™ 7960X, containing 24 cores
 * `RZ 5800`: AMD Ryzen™ 7 5800X, containing 8 cores
-* `i7 7700`: Intel® Core™ i7-7700, containing 4 cores
+* `i7 6700`: Intel® Core™ i7-6700, containing 4 cores
 
 The chart below shows the absolution computation time across different values of $n$.
 
