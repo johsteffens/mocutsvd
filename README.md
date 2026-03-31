@@ -358,10 +358,11 @@ To analyze code with `valgrind`, do not use these compiler flags.
 
 ![](doc/image/duration_tests.png)
 
-Absolute processing time in seconds for a full decomposition of a ($n$ x  $n$) matrix: $M \rightarrow U^\ast, \Sigma, V^\ast$. The charts represent 3 different CPUs.
+Absolute processing time in seconds for a full decomposition of a ( $n$ x $n$ ) matrix: $M \rightarrow U^\ast, \Sigma, V^\ast$.
 
 The following CPUs were used:
 * `TR 7960`: AMD Ryzen™ Threadripper™ 7960X, containing 24 cores
+* `RZ 7950`: AMD Ryzen™ 9 7950X, containing 16 cores
 * `RZ 5800`: AMD Ryzen™ 7 5800X, containing 8 cores
 * `i7 6700`: Intel® Core™ i7-6700, containing 4 cores
 
