@@ -46,7 +46,7 @@ mocut_mat_s* v = mocut_mat_s_create(); // Matrix V*
 mocut_svd( a, u, v ); 
 
 // At this point: 
-//  - 'a' represents Σ. The diagonal elements of 'a' contain singular values in descending order.
+//  - 'a' represents Σ. The diagonal elements are non-negative singular values sorted in descending order.
 //  - 'u', 'v', represent the matrices U*, V*:
 //       - U*: (10 x 20); its row vectors represent the left singular vectors
 //       - V*: (10 x 10); its row vectors represent the right singular vectors
@@ -251,7 +251,7 @@ The stride value is set automatically for optimal alignment during matrix-alloca
 
 ```mocut_svd``` performs the thin SVD on a (m x n)-Matrix: $M \rightarrow U^\ast, \Sigma, V^\ast$ .
 
-The matrices are being modified during execution. Matrix `a` must be initialized as $M$ before execution. After execution it represents $\Sigma$ : The diagonal elements represents the singular values, all other elements are set to zero.
+The matrices are being modified during execution. Matrix `a` must be initialized as $M$ before execution. After execution it represents $\Sigma$ : The diagonal elements represent non-negative singular values, sorted in descending order. Off-diagonal elements are zero.
 
 Arguments `u`, `v` are optional. They represent $U^\ast$ and $V^\ast$ respectively containing the singular vectors as row vectors. Pass `NULL` as argument when not needed.
 
