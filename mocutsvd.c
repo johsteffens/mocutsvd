@@ -1170,12 +1170,27 @@ int mocut_thin_svd( size_t a_rows, size_t a_cols, double* restrict a, size_t a_s
     ubd_flip_htp( a_rows, a_cols, a, a_stride, u, u_stride, v, v_stride );
 
     sz_t n = sz_min( a_rows, a_cols );
-    if( n <= 1 ) return 0; // nothing else to do
 
-    sz_t u_rows   = n;
-    sz_t u_cols   = a_rows;
-    sz_t v_rows   = n;
-    sz_t v_cols   = a_cols;
+    sz_t u_rows = n;
+    sz_t u_cols = a_rows;
+    sz_t v_rows = n;
+    sz_t v_cols = a_cols;
+
+    // special handling for n <= 1
+    if( n <= 1 )
+    {
+        if( n <= 0 ) return 0; // nothing else to do
+
+        // make sure diagonal element is >= 0
+        if( a[ 0 ] < 0 )
+        {
+            a[0] *= -1.0;
+            if( v ) mul_f3_to_row( v_rows, v_cols, v, v_stride, -1.0, 0 );
+        }
+        return 0;
+    }
+
+    // from here n >= 2 ...
 
     /** Defect elimination (maximizing stability)
      *
