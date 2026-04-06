@@ -37,7 +37,7 @@
 #include <stdarg.h>
 #include <memory.h>
 #include <math.h>
-#include <sys/time.h>
+#include <time.h>
 #include <assert.h>
 
 #include "mocutsvd.h"
@@ -49,12 +49,12 @@
 // Measures the absolute computation time of 'expression' and stores it in time_var
 #define ABS_TIME_OF( expression, time_var ) \
 { \
-    struct timeval t0, t1; \
-    gettimeofday( &t0, NULL ); \
+    struct timespec t0, t1; \
+    clock_gettime( CLOCK_MONOTONIC, &t0 ); \
     expression; \
-    gettimeofday( &t1, NULL ); \
+    clock_gettime( CLOCK_MONOTONIC, &t1 ); \
     time_var = t1.tv_sec - t0.tv_sec; \
-    time_var += ( t1.tv_usec - t0.tv_usec ) * 1E-6; \
+    time_var += ( t1.tv_nsec - t0.tv_nsec ) * 1E-9; \
 } \
 
 // ---------------------------------------------------------------------------------------------------------------------
