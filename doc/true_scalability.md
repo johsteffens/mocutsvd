@@ -216,7 +216,7 @@ For sake of completeness, I point out that the [Strassen Algorithm](https://en.w
 
 The purpose of using the matrix-multiplication example is to illustrate the paradigm and help the reader to generalize across other computational problems. It is not intended to offer the best matrix-multiplication algorithm in circulation.
 
-Finding a true-scalable algorithm can be difficult. Deciding whether such an algorithm exists is an np-hard problem. However, in many specific real-world scenarios these paradigms can help improving the overall computational efficiency.
+Finding a true-scalable algorithm can be difficult. Deciding whether such an algorithm exists, is an np-hard problem. However, in many specific real-world scenarios these paradigms can help improving the overall computational efficiency.
 
 ## Conclusion
 
