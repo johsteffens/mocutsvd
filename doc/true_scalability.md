@@ -50,7 +50,7 @@ Although matrix-matrix multiplication has a numeric complexity of $O(n^3)$,  The
 
 We assume that the matrix is located in contiguous memory.  For $c_{ij}$ we used the generic notation`c[i][j]`, which in a strict sense is only correct C-code when the matrix has a fixed size and is located on the stack. The dynamic solution places the matrix data on the heap as contiguous one dimensional array. 
 
-The [row-major](https://en.wikipedia.org/wiki/Row-_and_column-major_order) ordering, elements in a row have the same order in memory. All rows are stored as [strided array](https://en.wikipedia.org/wiki/Stride_of_an_array) with a fixed distance, called `stride`. It is  `stride >= columns`. In this ordering is $c_{ij}$ = `c[ i * stride + j ]`. For tightly packed matrices, `stride` would be equal to `columns`. We will show in section [Data Alignment](#data-alignment) that `stride` should be a multiple of a fixed block size.
+In the [row-major](https://en.wikipedia.org/wiki/Row-_and_column-major_order) ordering, elements in a row have the same order in memory. All rows are stored as [strided array](https://en.wikipedia.org/wiki/Stride_of_an_array) with a fixed distance, called `stride`. It is  `stride >= columns`. In this ordering is $c_{ij}$ = `c[ i * stride + j ]`. For tightly packed matrices, `stride` would be equal to `columns`. We will show in section [Data Alignment](#data-alignment) that `stride` should be a multiple of a fixed block size.
 
 The [column-major](https://en.wikipedia.org/wiki/Row-_and_column-major_order) ordering is the transposed counterpart with $c_{ij}$ = `c[ j * stride + i ]`.
 
