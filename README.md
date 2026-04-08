@@ -7,6 +7,7 @@ MocUT SVD is a stable, fast and easy-to-use implementation of the Singular Value
 ### Features
 
 * **Complete**: Computes all singular values and optionally all singular vectors with high accuracy.
+* **Thin**: Thin SVD on non-square matrix.
 * **Stable**: Same or better stability as the widely used Golub-Kahan-Reinsch SVD approach.
 * **Fast**: Efficient [true-scalable](doc/true_scalability.md) computation for small up to very large matrices.
 * **Parallel**: By default all available CPU-cores are used.
