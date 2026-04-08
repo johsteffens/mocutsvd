@@ -4,7 +4,7 @@
 
 MocUT SVD is a stable, fast and easy-to-use implementation of the Singular Value Decomposition for C or C++ programs. It was completely redesigned from scratch and contains several improvements compared to traditional implementations. It is specially optimized for modern CPU architectures.
 
-### Benefits
+### Features
 
 * **Complete**: Computes all singular values and optionally all singular vectors with high accuracy.
 * **Stable**: Same or better stability as the widely used Golub-Kahan-Reinsch SVD approach.
