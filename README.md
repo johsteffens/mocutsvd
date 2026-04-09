@@ -128,9 +128,9 @@ ___________________________________
 
 ## Detailed Description
 
-Singular Value Decomposition is the method of finding the three components $U, \Sigma, V$ to an arbitrary (m x n) matrix $M$, which satisfy the equation $M = U \cdot \Sigma \cdot V^\ast$ . Where $\Sigma$ is a diagonal matrix containing singular values and $U$, $V$ are unitary matrices containing left and right singular vectors. The SVD algorithm is of critical importance in science and engineering.
+Singular Value Decomposition is the method of finding the three components $U, \Sigma, V$ to an arbitrary (m x n) matrix $M$, which satisfy the equation $M = U \cdot \Sigma \cdot V^\ast$ . $\Sigma$ is a diagonal matrix, the diagnal elements represent singular values. $U$ and $V$ are unitary matrices, containing left and right singular vectors. The SVD algorithm is of critical importance in science and engineering.
 
-MocUT SVD is an algorithm for singular value decomposition.  Given a matrix $M$, it calculates the matrices $U^\ast, \Sigma, V^\ast$ . It is derived from the Golub-Kahan-Reinsch approach and inherits its proven stability. It was developed from ground up with many performance-critical improvements.
+MocUT SVD is an algorithm for singular value decomposition. Given a matrix $M$, it calculates the matrices $U^\ast, \Sigma, V^\ast$. It is derived from the Golub-Kahan-Reinsch approach and inherits its proven accuracy and stability. It was developed from ground up with many performance-critical improvements. The singular values are all non-negtive and sorted from largest to smalles value. If $U^\ast$ or $V^\ast$ is not needed, the computation can be skipped to save CPU time.
 
 #### About the Name
 
