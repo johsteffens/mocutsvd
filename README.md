@@ -255,7 +255,7 @@ The stride value is set automatically for optimal alignment during matrix-alloca
 
 The matrices are being modified during execution. Matrix `a` must be initialized as $M$ before execution. After execution it represents $\Sigma$ : The diagonal elements represent non-negative singular values, sorted in descending order. Off-diagonal elements are zero.
 
-Arguments `u`, `v` are optional. They represent $U^\ast$ and $V^\ast$ respectively containing the singular vectors as row vectors. Pass `NULL` as argument when not needed.
+Arguments `u`, `v` are optional. They represent $U^\ast$ and $V^\ast$ respectively, containing the singular vectors as row vectors. Pass `NULL` as argument when not needed.
 
 If $U^\ast$ or $V^\ast$ is needed, you can pass either an empty instance, or you can pass a pre-sized matrix (via `matrix-alloc` or `matrix-setup`). 
 
