@@ -130,11 +130,13 @@ ___________________________________
 
 Singular Value Decomposition is the method of finding the three components $U, \Sigma, V$ to an arbitrary (m x n) matrix $M$, which satisfy the equation $M = U \cdot \Sigma \cdot V^\ast$ . $\Sigma$ is a diagonal matrix. The diagonal elements represent singular values. $U$ and $V$ are unitary matrices, containing left and right singular vectors. The SVD algorithm is of critical importance in science and engineering.
 
-MocUT SVD is an algorithm for singular value decomposition. Given a matrix $M$, it calculates the matrices $U^\ast, \Sigma, V^\ast$. It is derived from the Golub-Kahan-Reinsch approach and inherits its proven accuracy and stability. It was developed from ground up with many performance-critical improvements. The singular values are all non-negtive and sorted from largest to smalles value. If $U^\ast$ or $V^\ast$ is not needed, the computation can be skipped to save CPU time.
+MocUT SVD is an algorithm for singular value decomposition. Given a matrix $M$, it calculates the matrices $U^\ast, \Sigma, V^\ast$. It is derived from the Golub-Kahan-Reinsch approach and inherits its proven accuracy and stability. The singular values are all non-negtive and sorted from largest to smalles value. If $U^\ast$ or $V^\ast$ is not needed, the computation can be skipped to save CPU time.
+
+MocUT SVD was developed from ground up with significant improvements on speed without sacrificing stability or accuracy and without requiring special hardware.
 
 #### About the Name
 
-**MocUT** is a shortcut for Monoclinic Unitary Transformation, which is a special kind of recurring transformation pattern I designed for this SVD solution. More details can be found in this whitepaper: [MocUT SVD: Singular Value Decomposition via Monoclinic Unitary Transformations](doc/mocutsvd.md).
+**MocUT** is a shortcut for Monoclinic Unitary Transformation, which is a special kind of recurring transformation pattern. More details can be found in this whitepaper: [MocUT SVD: Singular Value Decomposition via Monoclinic Unitary Transformations](doc/mocutsvd.md).
 
 #### Platform Support
 
