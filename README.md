@@ -66,6 +66,7 @@ mocut_mat_s_discard( v );
 ```
 
 For more details: See [example.c](example.c)
+
 For a comprehensive performance test: See [test.c](test.c)
 
 #### Build
