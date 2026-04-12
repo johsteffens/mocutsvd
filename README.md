@@ -44,16 +44,18 @@ for( size_t i = 0; i < a->rows; i++ )
 mocut_mat_s* u = mocut_mat_s_create(); // Matrix U*
 mocut_mat_s* v = mocut_mat_s_create(); // Matrix V*
 
-// SVD: A -> U*, Σ, V*; computing singular vectors in U* or V* is optional; pass NULL where not needed.
-mocut_svd( a, u, v ); 
+// SVD: A -> U*, Σ, V*
+mocut_svd( a, u, v );
+// Computing U* or V* is optional: Pass NULL where not needed.
 
 // At this point: 
-//  - 'a' represents Σ. The diagonal elements are non-negative singular values sorted in descending order.
+//  - 'a' represents Σ.
+//     - The diagonal elements are non-negative singular values sorted in descending order.
 //  - 'u', 'v', represent the matrices U*, V*:
 //       - U*: (10 x 20); its row vectors represent the left singular vectors
 //       - V*: (10 x 10); its row vectors represent the right singular vectors
 
-// Access any matrix element via function mocut_mat_s_get or mocut_mat_s_ptr
+// You can access any matrix element via mocut_mat_s_get or mocut_mat_s_ptr
 
 ....
     
@@ -61,10 +63,10 @@ mocut_svd( a, u, v );
 mocut_mat_s_discard( a );
 mocut_mat_s_discard( u );
 mocut_mat_s_discard( v );
-
-// For more details: See example.c
-// For a comprehensive performance test: See test.c
 ```
+
+For more details: See [example.c](example.c)
+For a comprehensive performance test: See [test.c](test.c)
 
 #### Build
 
@@ -90,7 +92,7 @@ make mocutsvd_test
 ./mocutsvd_test 5000 5000 
 ```
 
-Possible output: (Test on a workstation with 16 HT cores)
+Possible output: (Tested on a workstation with 16 HT cores)
 
 ```
 M = Randomized matrix of size (5000 x 5000).
