@@ -137,9 +137,9 @@ MocUT SVD is an algorithm for singular value decomposition. Given a matrix $M$, 
 
 MocUT SVD was developed from ground up with significant improvements on speed without sacrificing stability or accuracy and without requiring special hardware.
 
-#### About the Name
+#### Transposed $U$, $V$
 
-**MocUT** is a shortcut for Monoclinic Unitary Transformation, which is a special kind of recurring transformation pattern. More details can be found in this whitepaper: [MocUT SVD: Singular Value Decomposition via Monoclinic Unitary Transformations](doc/mocutsvd.md).
+MocUT SVD generates the matrices of singular vectors in their transposed form: $U^\ast$, $V^\ast$, where singular vectors are row-vectors. If desired, you can convert the matrix back to the traditional form via function ```mocut_mat_s_copy_transposed```.
 
 #### Platform Support
 
@@ -149,9 +149,9 @@ At the same time the code maintains high portability: It only requires complianc
 
 Portability is achieved by utilizing [generic coding paradigms](doc/true_scalability.md) that help the compiler applying platform specific optimizations. Outer parallelity is achieved via [Open MP](https://en.wikipedia.org/wiki/OpenMP).
 
-#### Transposed $U$, $V$
+#### More Technical Details
 
-MocUT SVD generates the matrices of singular vectors in their transposed form: $U^\ast$, $V^\ast$, where singular vectors are row-vectors. If desired, you can convert the matrix back to the traditional form via function ```mocut_mat_s_copy_transposed```.
+**MocUT** is a shortcut for *Monoclinic Unitary Transformation*. I contrived this name to describe a special kind of recurring transformation pattern, which is essential to the computational efficiency of this SVD solution. More details can be found in this whitepaper: [MocUT SVD: Singular Value Decomposition via Monoclinic Unitary Transformations](doc/mocutsvd.md).
 
 ### Error Handling
 
