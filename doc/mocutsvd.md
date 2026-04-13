@@ -107,7 +107,7 @@ Phase 1 iterates on a lower-right block matrix. Each iteration adds a new bi-dia
 * Blue: Already zeroed values.
 
 
-$P_i$ and $Q_i$ are tightly coupled: To determine $P_i$, the $i$-th column of $(A_{i-1}Q_{i-1}^\ast)$ must be known. To determine $Q_i$, the $i$-th row of  $(P_i A_{i-1})$ must be known. Consequently all of the residual not yet bi-diagonalized portion of A must be accessed before the next UT can be computed. This thwarts data-locality an severely limits [outer-parallelity](true_scalability.md#outer-parallelity) because the outermost loop is fairly long and not independent.
+$P_i$ and $Q_i$ are tightly coupled: To determine $P_i$, the $i$-th column of $(A_{i-1}Q_{i-1}^\ast)$ must be known. To determine $Q_i$, the $i$-th row of  $(P_i A_{i-1})$ must be known. Consequently all of the residual not yet bi-diagonalized portion of A must be accessed before the next UT can be computed. This thwarts data-locality and severely limits [outer-parallelity](true_scalability.md#outer-parallelity) because the outermost loop is fairly long and not independent.
 
 Hence, phase 1 in the Golub-Reinsch Algorithm is not [true-scalable](#true_scalable).
 
