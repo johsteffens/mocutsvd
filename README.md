@@ -131,11 +131,11 @@ ___________________________________
 
 ## Detailed Description
 
-Singular Value Decomposition is the method of finding the three components $U, \Sigma, V$ to an arbitrary (m x n) matrix $M$, which satisfy the equation $M = U \cdot \Sigma \cdot V^\ast$ . $\Sigma$ is a diagonal matrix. The diagonal elements represent singular values. $U$ and $V$ are unitary matrices, containing left and right singular vectors. The SVD algorithm is of critical importance in science and engineering.
+Singular Value Decomposition (SVD) is the method of finding the three components $U, \Sigma, V$ to an arbitrary (m x n) matrix $M$, which satisfy the equation $M = U \cdot \Sigma \cdot V^\ast$ . $\Sigma$ is a diagonal matrix. The diagonal elements represent singular values. $U$ and $V$ are unitary matrices, containing left and right singular vectors. The SVD algorithm is of critical importance in science and engineering.
 
-MocUT SVD is an algorithm for singular value decomposition. Given a matrix $M$, it calculates the matrices $U^\ast, \Sigma, V^\ast$. It is derived from the Golub-Kahan-Reinsch approach and inherits its proven accuracy and stability. The singular values are all non-negtive and sorted from largest to smalles value. If $U^\ast$ or $V^\ast$ is not needed, the computation can be skipped to save CPU time.
+[MocUT SVD](doc/mocutsvd.md) is an algorithm for singular value decomposition. Given a matrix $M$, it calculates the matrices $U^\ast, \Sigma, V^\ast$. It is derived from the Golub-Kahan-Reinsch approach and inherits its proven accuracy and stability. The singular values are all non-negtive and sorted from largest to smalles value. If $U^\ast$ or $V^\ast$ is not needed, the computation can be skipped to save CPU time.
 
-MocUT SVD was developed from ground up with significant improvements in speed, without sacrificing stability or accuracy and without requiring special hardware.
+[MocUT SVD](doc/mocutsvd.md) was developed from ground up with significant improvements in speed, without sacrificing stability or accuracy and without requiring special hardware.
 
 ### Transposed $U$, $V$
 
