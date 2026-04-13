@@ -357,7 +357,7 @@ Advanced debugging tools like `valgrind` analyze the instructions and memory usa
 
 * Valgrind might not recognize newer native CPU instructions, which occur with certain native compiler optimizations (such as `-march=native` ).
 
-* Valgrind might not be compatible to a compilers integration of OpenMP  (`-fopenmp`).
+* Valgrind might not be compatible to the compiler's integration of OpenMP  (`-fopenmp`).
 
 To analyze code with `valgrind`, do not use these compiler flags.
 
