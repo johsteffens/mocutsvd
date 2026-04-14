@@ -174,6 +174,8 @@ The matrix is represented by structure ```mocut_mat_s```, which contains the fol
 * ```size_t stride``` : Number of elements between the start of two successive rows. It is ```stride >= cols```.
 * ```double* data```: Location of matrix data in memory.
 
+#### Layout
+
 The matrix uses a 'strided row-major' data-layout. This means that the element ```[i][j]``` is accessed as ```data[ i * stride + j ]```;  $i \in \{ 0, ..., \text{rows}-1 \},  j \in \{ 0, ..., \text{cols}-1 \}$.
 
 The stride value is set automatically for optimal alignment during matrix-allocation. You may also setup a matrix manually, referencing external data via `matrix-setup` function.
