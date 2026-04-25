@@ -4,8 +4,7 @@
  /** This simple example program demonstrates the usage of mocutsvd.
   *  You may freely use code snippets from this file for your own integration of mocutsvd.
   *
-  *  This example code is not designed for very large matrices.
-  *  Use test.c for a comprehensive evaluation of mocutsvd on large matrices.
+  *  This example code provides a quick insight into the API.
   *
   *  Compilation:
   *     gcc -o mocutsvd_example example.c mocutsvd.c -fopenmp -march=native -O3 -lm
