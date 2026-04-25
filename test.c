@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
- /** This test program evaluates the performance of mocutsvd on arbitrary matrix sizes.
+ /** This test program evaluates the performance of mocutsvd on an arbitrary matrix.
   *
   *  Compilation (compiler options are suggestions for best results):
   *     gcc -o mocutsvd_test test.c mocutsvd.c -fopenmp -march=native -O3 -lm
