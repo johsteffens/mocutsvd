@@ -78,10 +78,10 @@ For a comprehensive performance test: See [test.c](test.c)
   * Recommended for advanced CPU specific optimization: `-march=native`. 
   * Recommended to unlock outer parallelity: `-fopenmp` (both: compiler and linker need this flag)
 
-* **Example**:
-* ```bash
-* $ gcc -o mocutsvd_example example.c mocutsvd.c -fopenmp -march=native -O3 -lm
-* ```
+**Example**:
+```bash 
+gcc -o mocutsvd_example example.c mocutsvd.c -fopenmp -march=native -O3 -lm 
+ ```
 
 * There is also a simple [makefile](makefile).
 
