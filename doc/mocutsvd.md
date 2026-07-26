@@ -19,7 +19,7 @@ This document first covers traditional methods of performing the SVD and then fo
 
 ## Matrix Decomposition
 
-Lets express matrix $M$ by a generic decomposition $U$, $A$, $V$ of which $U$, $V$ are unitary. For the moment $A$ can be any matrix. 
+Let's express matrix $M$ by a generic decomposition $U$, $A$, $V$ of which $U$, $V$ are unitary. For the moment $A$ can be any matrix. 
 
 **(1)** 	$M = UAV^\ast$
 
@@ -303,7 +303,7 @@ G. W. Stewart [13] presented an economical and numerically stable way to store g
 
 #### Householder Reflection
 
-Lets have a closer look into the left-sided atomic (n x n) householder transformation $H$ on a (m x n)-partition $T$ of a matrix:
+Let's have a closer look into the left-sided atomic (n x n) householder transformation $H$ on a (m x n)-partition $T$ of a matrix:
 
 **(1)**	$T \rightarrow HT$
 
