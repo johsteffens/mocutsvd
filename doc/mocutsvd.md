@@ -29,7 +29,7 @@ Since the product of a unitary matrix with its adjunct $(P^\ast P)$ is the unity
 
 **(2)** 	$UAV^\ast = U(P^\ast P)A(Q^\ast Q) V^\ast = (UP^\ast)(PAQ^\ast)(QV^\ast) = U_{new} A_{new} V_{new}^\ast$
 
-Equation (2) represents an incremental step.
+Equation (2) represents an incremental step from equation (1).
 
 Most decomposition algorithms use this approach to convert A incrementally into a desired shape. The incremental conversion on $U$ and $V$ is called ***back-transformation***. It can be omitted when $U$ or $V$ are not needed.
 
