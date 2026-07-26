@@ -119,7 +119,7 @@ Describing this algorithm goes beyond the scope of this document. At this point,
 
 ## The DC Approach
 
-For sake of completeness, we briefly mention that for diagonalizing a bi-diagonal matrix, a stable and efficient divide an conquer approach has been developed by Ming Gu et al. [10]. The DC-approach is significantly different from the Golub-Reinsch GR-chasing. The DC-Approach appears to run faster at similar stability. It has been adopted by popular SVD software libraries. However, we did not utilize the DC-Idea in MocUT-SVD.
+For sake of completeness, we briefly mention that for diagonalizing a bi-diagonal matrix, a stable and efficient divide an conquer approach has been developed by Ming Gu et al. [10]. The DC-approach is significantly different from the Golub-Reinsch GR-chasing. The DC-Approach appears to run faster at similar stability. It has been adopted by popular SVD software libraries. We did not utilize the DC-Idea in MocUT-SVD but found a solution that outperforms other public SVD solutions that use the DC-Approach.
 
 ## The 3-Phase Band-Diagonal SVD Approach
 
